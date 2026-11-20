@@ -1,0 +1,1594 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Південь і вода</title>
+<meta name="description" content="Інтерактивна історія про воду Миколаєва, Каховське водосховище і ліс, що виріс на його дні.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%A7%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#E6ECE9; --bg-2:#D6E0DC; --ink:#10313A; --muted:#47646A; --card:rgba(230,236,233,.9); --line:rgba(16,49,58,.2);
+  --water-deep:#1D4B59; --water:#3C7C89; --water-light:#8DB8B7; --foam:#F3F8F6; --sky:#DDE8E6;
+  --mud:#7B6A50; --mud-dry:#B7A27B; --willow:#5B8A33; --rust:#B3432A; --fresh:#1F8378;
+  --serif:"Iowan Old Style","Palatino Linotype","Book Antiqua",Palatino,Georgia,"Noto Serif","DejaVu Serif",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Helvetica Neue",Arial,sans-serif;
+  --vh:100vh;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@supports (height:100svh){ :root{ --vh:100svh; } }
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C2228; --bg-2:#12303A; --ink:#E1EBE7; --muted:#9DB5B5; --card:rgba(12,34,40,.88); --line:rgba(225,235,231,.2);
+    --water-deep:#0B3340; --water:#28626F; --water-light:#5A949C; --foam:#D2E6E2; --sky:#0F2A31;
+    --mud:#5A4F3C; --mud-dry:#8C7B5C; --willow:#86B457; --rust:#E2694B; --fresh:#4DB6A9;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C2228; --bg-2:#12303A; --ink:#E1EBE7; --muted:#9DB5B5; --card:rgba(12,34,40,.88); --line:rgba(225,235,231,.2);
+  --water-deep:#0B3340; --water:#28626F; --water-light:#5A949C; --foam:#D2E6E2; --sky:#0F2A31;
+  --mud:#5A4F3C; --mud-dry:#8C7B5C; --willow:#86B457; --rust:#E2694B; --fresh:#4DB6A9;
+  color-scheme:dark;
+}
+*,*::before,*::after{ box-sizing:inherit; }
+html{ scroll-padding-top:env(safe-area-inset-top,0px); }
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:400 1.075rem/1.62 var(--sans);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+h1,h2,h3{ font-family:var(--serif); font-weight:600; letter-spacing:-.01em; margin:0; }
+p{ margin:0 0 1em; }
+a{ color:inherit; text-decoration-thickness:1px; text-underline-offset:3px; }
+a:hover{ color:var(--fresh); }
+:focus-visible{ outline:3px solid var(--fresh); outline-offset:3px; }
+.visually-hidden{ position:absolute!important; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+#progress{ position:fixed; top:0; left:0; height:3px; width:100%; transform-origin:0 50%; transform:scaleX(0); background:var(--fresh); z-index:30; }
+
+.sound-btn{
+  position:fixed; z-index:31; right:max(14px,env(safe-area-inset-right,0px)); top:calc(14px + env(safe-area-inset-top,0px));
+  display:flex; align-items:center; gap:.5rem; padding:.5rem .85rem; border:1px solid var(--line); border-radius:999px;
+  background:var(--card); color:var(--ink); font:500 .9rem/1 var(--sans); cursor:pointer; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+}
+.sound-btn svg{ width:18px; height:18px; }
+.sound-btn[aria-pressed="true"] .wave{ opacity:1; }
+.sound-btn .wave{ opacity:.25; transition:opacity .3s; }
+
+.hero{ position:relative; height:var(--vh); min-height:560px; overflow:hidden; background:var(--sky); }
+.hero canvas{ position:absolute; inset:0; width:100%; height:100%; z-index:2; }
+.hero-title{
+  position:absolute; z-index:1; left:6vw; right:6vw; bottom:40.5%;
+  font-size:clamp(3.4rem,13vw,10.5rem); line-height:.86; letter-spacing:-.035em; color:var(--ink);
+}
+.hero-title span{ display:block; }
+.hero-sub{
+  position:absolute; z-index:3; left:6vw; right:6vw; top:62%; max-width:38rem; color:var(--foam);
+}
+.hero-sub .lead{ font-family:var(--serif); font-size:clamp(1.2rem,2.6vw,1.6rem); line-height:1.35; margin-bottom:.9rem; }
+.hero-sub .meta{ font-size:.95rem; opacity:.85; margin-bottom:.4rem; }
+.hero-sub .hint{ font-size:.95rem; opacity:.85; margin-top:1rem; }
+
+.intro{ padding:22vh 6vw 16vh; }
+.intro-inner{ max-width:40rem; }
+.intro .part{ display:block; font-family:var(--serif); font-size:1.15rem; color:var(--muted); margin-bottom:.6rem; }
+.intro h2{ font-size:clamp(2.5rem,6.5vw,5rem); line-height:.98; letter-spacing:-.025em; margin-bottom:1.6rem; }
+.intro p{ font-family:var(--serif); font-size:clamp(1.15rem,2vw,1.4rem); line-height:1.55; max-width:34em; }
+
+.scrolly{ position:relative; }
+.stage{ position:sticky; top:0; height:var(--vh); overflow:hidden; }
+.stage > canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+.steps{ position:relative; z-index:5; margin-top:calc(-1 * var(--vh)); pointer-events:none; }
+.step{ min-height:var(--vh); display:flex; align-items:center; padding:0 6vw; }
+.step:last-child{ min-height:calc(var(--vh) * 1.15); }
+.card{
+  pointer-events:auto; max-width:25rem; padding:1.25rem 1.4rem 1.1rem; background:var(--card);
+  border-left:3px solid var(--water); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  opacity:.38; transition:opacity .45s ease;
+}
+.step.is-active .card{ opacity:1; }
+.card .when{ display:block; font-family:var(--serif); font-size:1.7rem; line-height:1.1; margin-bottom:.55rem; font-variant-numeric:lining-nums; }
+.card p{ margin:0; }
+.card p + p{ margin-top:.7em; }
+.card strong{ font-weight:650; }
+#salt .card{ border-left-color:var(--rust); }
+#forest .card{ border-left-color:var(--willow); }
+#pipe .card{ border-left-color:var(--fresh); }
+
+.stage-date{
+  position:absolute; z-index:3; right:6vw; top:calc(64px + env(safe-area-inset-top,0px));
+  font-family:var(--serif); font-size:clamp(1.6rem,4vw,3rem); line-height:1; text-align:right; color:var(--ink);
+}
+.stage-note{ position:absolute; z-index:3; right:6vw; bottom:18px; font-size:.8rem; color:var(--muted); max-width:22rem; text-align:right; }
+
+.burst-labels{ position:absolute; inset:0; z-index:3; pointer-events:none; }
+.burst-label{ position:absolute; font-size:.95rem; color:var(--ink); }
+.burst-label b{ display:block; font-family:var(--serif); font-size:1.35rem; font-weight:600; }
+.burst-label .count{ font-variant-numeric:tabular-nums; color:var(--muted); }
+
+#pipeSvg{ position:absolute; inset:0; width:100%; height:100%; }
+#pipeSvg .river{ fill:none; stroke:var(--water-light); stroke-linecap:round; }
+#pipeSvg .label{ font-family:var(--serif); fill:var(--muted); font-size:24px; font-style:italic; }
+#pipeSvg .city-label{ font-family:var(--serif); fill:var(--ink); font-size:34px; font-weight:600; }
+#pipeSvg .small{ font-family:var(--sans); fill:var(--muted); font-size:19px; }
+#pipeSvg .old{ fill:none; stroke:var(--rust); stroke-width:5; stroke-dasharray:14 10; opacity:.9; }
+#pipeSvg .breakx{ stroke:var(--rust); stroke-width:5; stroke-linecap:round; }
+#pipeSvg .new{ fill:none; stroke:var(--fresh); stroke-width:7; stroke-linecap:round; }
+#pipeSvg .flow{ fill:none; stroke:var(--foam); stroke-width:3; stroke-linecap:round; stroke-dasharray:4 22; opacity:0; transition:opacity .6s; }
+#pipeSvg.flowing .flow{ opacity:.95; animation:flow 1.1s linear infinite; }
+@keyframes flow{ to{ stroke-dashoffset:-26; } }
+#pipeSvg .pump{ fill:var(--fresh); stroke:var(--bg); stroke-width:3; transition:transform .5s, opacity .5s; opacity:0; }
+#pipeSvg .pump.on{ opacity:1; }
+#pipeSvg .pump-n{ font:600 15px var(--sans); fill:var(--bg); text-anchor:middle; dominant-baseline:central; opacity:0; transition:opacity .5s; }
+#pipeSvg .pump-n.on{ opacity:1; }
+#pipeSvg .city{ fill:var(--bg); stroke:var(--ink); stroke-width:4; transition:fill .8s; }
+#pipeSvg.flowing .city{ fill:var(--fresh); }
+#pipeSvg .plant{ opacity:0; transition:opacity .6s; }
+#pipeSvg .plant.on{ opacity:1; }
+#pipeSvg .plant rect{ fill:var(--fresh); stroke:var(--bg); stroke-width:3; }
+#pipeSvg .reveal{ opacity:0; transition:opacity .6s; }
+#pipeSvg .reveal.on{ opacity:1; }
+#pipeSvg .sea{ fill:var(--water-light); opacity:.45; }
+
+
+.tilt-wrap{ position:absolute; inset:0; perspective:1100px; overflow:hidden; background:linear-gradient(180deg,var(--sky),var(--bg) 40%); }
+.tilt-wrap::after{ content:""; position:absolute; left:0; right:0; top:0; height:30%; background:linear-gradient(180deg,var(--sky) 0%,transparent 100%); opacity:var(--fog,0); pointer-events:none; }
+.tilt{ position:absolute; inset:-8% -12%; transform-origin:50% 75%; will-change:transform; }
+.tilt canvas{ width:100%; height:100%; display:block; }
+#treesCanvas{ position:absolute; left:0; right:0; top:auto; bottom:0; width:100%; height:42%; z-index:2; pointer-events:none; }
+.legend{ position:absolute; z-index:3; right:6vw; top:calc(64px + 3.6rem + env(safe-area-inset-top,0px)); width:min(16rem,40vw); font-size:.8rem; color:var(--ink); background:var(--card); padding:.6rem .7rem .55rem; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+.legend .bar{ height:10px; margin:.35rem 0 .25rem; background:linear-gradient(90deg,#2E5E74 0 14%,#A38C69 14% 30%,#CDBE8A 30% 46%,#A6BD5C 46% 66%,#3E7D34 66% 86%,#1F5A28 86%); }
+.legend .ends{ display:flex; justify-content:space-between; color:var(--muted); }
+
+.compare-sec{ padding:14vh 6vw 10vh; }
+.compare-head{ max-width:40rem; margin-bottom:1.6rem; }
+.compare-head h3{ font-size:clamp(1.8rem,4vw,2.8rem); line-height:1.05; margin-bottom:.8rem; }
+.compare{ position:relative; max-width:1120px; aspect-ratio:16/10; margin:0 auto; overflow:hidden; background:var(--bg-2); --pos:50%; touch-action:pan-y; }
+.compare canvas,.compare img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+.compare #cmpBefore{ z-index:0; }
+.compare #cmpPhotoBefore{ z-index:1; }
+.compare #cmpAfter{ z-index:2; }
+.compare #cmpPhotoAfter{ z-index:3; }
+.compare .real-image{ visibility:hidden; }
+.compare .real-image.is-loaded{ visibility:visible; }
+.compare .after{ clip-path:inset(0 0 0 var(--pos)); }
+.compare .handle{ position:absolute; top:0; bottom:0; left:var(--pos); width:3px; margin-left:-1.5px; background:var(--foam); pointer-events:none; z-index:4; }
+.compare .handle::after{ content:""; position:absolute; top:50%; left:50%; width:44px; height:44px; margin:-22px 0 0 -22px; border-radius:50%; background:var(--foam); box-shadow:0 0 0 3px var(--ink) inset; }
+.compare input{ position:absolute; inset:0; width:100%; height:100%; margin:0; opacity:0; cursor:ew-resize; z-index:5; }
+.compare:focus-within .handle::after{ box-shadow:0 0 0 3px var(--fresh) inset, 0 0 0 4px var(--fresh); }
+.compare .tag{ position:absolute; z-index:4; bottom:12px; padding:.25rem .55rem; font-size:.85rem; background:var(--card); color:var(--ink); }
+.compare .tag.l{ left:12px; } .compare .tag.r{ right:12px; }
+
+.cost{ padding:8vh 6vw 12vh; }
+.cost-inner{ max-width:56rem; }
+.cost .lbl{ font-family:var(--serif); font-size:clamp(1.15rem,2.2vw,1.45rem); max-width:30em; }
+.counter{ font-family:var(--serif); font-weight:600; font-size:clamp(2.6rem,9.5vw,7.2rem); line-height:1; letter-spacing:-.02em; font-variant-numeric:tabular-nums lining-nums; margin:.3rem 0 .6rem; color:var(--rust); overflow-wrap:anywhere; }
+.counter-time{ color:var(--muted); font-variant-numeric:tabular-nums; margin-bottom:1.6rem; }
+.cost .small{ font-size:.95rem; color:var(--muted); max-width:42rem; }
+
+.sim{ padding:10vh 6vw; background:var(--bg-2); }
+.sim-inner{ max-width:64rem; display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:3rem 4rem; align-items:start; }
+.sim h3,.calc h3{ font-size:clamp(1.8rem,4vw,2.8rem); line-height:1.05; margin-bottom:.8rem; }
+.sim .intro-p{ max-width:34rem; }
+.slider-row{ margin:1.1rem 0; }
+.slider-row label{ display:flex; justify-content:space-between; gap:1rem; font-weight:500; }
+.slider-row output{ font-variant-numeric:tabular-nums; color:var(--muted); }
+.slider-row input[type=range]{ width:100%; accent-color:var(--fresh); margin-top:.35rem; height:28px; }
+.can-wrap{ text-align:center; }
+.can-wrap svg{ width:min(220px,60vw); height:auto; }
+.can-left{ font-family:var(--serif); font-size:1.5rem; margin-top:.4rem; font-variant-numeric:tabular-nums; }
+.btn{
+  display:inline-block; margin-top:.6rem; padding:.8rem 1.2rem; border:0; border-radius:2px; cursor:pointer;
+  background:var(--ink); color:var(--bg); font:600 1rem/1.2 var(--sans);
+}
+.btn.ghost{ background:transparent; color:var(--ink); box-shadow:inset 0 0 0 1.5px var(--ink); }
+.feedback{ margin-top:1.4rem; padding-left:1rem; border-left:3px solid var(--fresh); }
+.feedback:empty{ display:none; }
+.feedback p{ margin:.2rem 0 .7rem; }
+.feedback .bad{ color:var(--rust); font-weight:600; }
+
+.calc{ padding:10vh 6vw; }
+.calc-inner{ max-width:64rem; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:2.5rem 4rem; align-items:start; }
+.stepper{ display:flex; align-items:center; gap:.8rem; margin:1rem 0 1.4rem; }
+.stepper button{ width:44px; height:44px; border-radius:50%; border:1.5px solid var(--ink); background:transparent; color:var(--ink); font:500 1.4rem/1 var(--sans); cursor:pointer; }
+.stepper output{ font-family:var(--serif); font-size:2rem; min-width:2.2ch; text-align:center; font-variant-numeric:tabular-nums; }
+.calc-out{ display:grid; gap:1rem; }
+.calc-out div{ border-top:1px solid var(--line); padding-top:.7rem; }
+.calc-out b{ display:block; font-family:var(--serif); font-size:clamp(1.8rem,4vw,2.6rem); font-weight:600; line-height:1.1; font-variant-numeric:tabular-nums; }
+.tips{ margin:0; padding-left:1.2rem; }
+.tips li{ margin:.45rem 0; }
+
+.final{ padding:18vh 6vw 10vh; }
+.final h2{ font-size:clamp(2.4rem,6.5vw,5rem); line-height:.98; letter-spacing:-.025em; margin-bottom:1.4rem; max-width:14ch; }
+.final p{ font-family:var(--serif); font-size:clamp(1.15rem,2vw,1.4rem); max-width:34em; }
+footer{ padding:6vh 6vw 10vh; border-top:1px solid var(--line); font-size:.92rem; color:var(--muted); }
+footer h3{ font-size:1.3rem; color:var(--ink); margin:0 0 .8rem; }
+footer ol{ padding-left:1.3rem; max-width:52rem; }
+footer li{ margin:.35rem 0; }
+footer .cols{ display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:2rem 4rem; }
+
+
+.queue{ padding:14vh 6vw; background:var(--bg-2); }
+.queue-inner{ max-width:68rem; display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:3rem 5rem; align-items:start; }
+.queue h3{ font-size:clamp(2.4rem,6vw,4.2rem); line-height:1; letter-spacing:-.02em; margin-bottom:1rem; }
+.q-lead{ font-family:var(--serif); font-size:clamp(1.15rem,2vw,1.4rem); line-height:1.5; }
+.q-stats{ display:flex; gap:2rem; font-family:var(--serif); font-size:1.6rem; margin:1.4rem 0 1rem; font-variant-numeric:tabular-nums; }
+.q-facts{ list-style:none; padding:0; margin:0; counter-reset:f; }
+.q-facts li{ position:relative; padding:.8rem 0 .8rem 2.7rem; border-top:1px solid var(--line); }
+.q-facts li::before{ counter-increment:f; content:counter(f); position:absolute; left:0; top:.78rem; width:1.8rem; height:1.8rem; border-radius:50%; background:var(--water); color:var(--foam); font:600 .85rem/1.8rem var(--sans); text-align:center; }
+.q-facts li.new{ animation:factIn .5s ease; }
+@keyframes factIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:none; } }
+.queue-bottle{ position:sticky; top:12vh; text-align:center; }
+#bottleSvg{ width:min(240px,58vw); height:auto; display:block; margin:0 auto 1rem; }
+.hold{ touch-action:none; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; min-width:15rem; padding:1rem 1.4rem; font-size:1.05rem; }
+.hold.is-holding{ background:var(--water); color:var(--foam); }
+.q-hint{ font-size:.85rem; color:var(--muted); margin-top:.6rem; }
+
+
+.gallery{ padding:10vh 6vw; }
+.gallery h3{ font-size:clamp(1.6rem,3.5vw,2.4rem); margin-bottom:1.2rem; }
+.gal{ display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px; max-width:72rem; }
+.gal img{ width:100%; height:100%; aspect-ratio:4/3; object-fit:cover; display:block; }
+
+
+#pipeSvg .rust-ring{ fill:none; stroke:var(--rust); stroke-width:9; stroke-dasharray:3 6; opacity:0; transition:opacity .6s; }
+#pipeSvg.spoiled .rust-ring{ opacity:1; }
+#pipeSvg.spoiled .city{ fill:var(--rust); }
+#pipeSvg .rust-t{ fill:var(--rust); font-weight:600; }
+.card .quote{ font-family:var(--serif); font-size:1.35rem; line-height:1.3; margin-top:.6rem; }
+
+
+.h-mid{ font-size:clamp(2.2rem,5.5vw,4rem)!important; }
+#flood .card{ border-left-color:var(--mud-dry); }
+#zoo .card{ border-left-color:var(--muted); }
+.zoo-num{ position:absolute; z-index:3; right:6vw; top:calc(64px + env(safe-area-inset-top,0px)); text-align:right; color:var(--ink); }
+.zoo-num b{ display:block; font-family:var(--serif); font-size:clamp(3rem,9vw,7rem); line-height:.9; font-variant-numeric:lining-nums; }
+.zoo-num span{ font-size:1rem; color:var(--muted); }
+@media (max-width:760px){
+  .queue-inner{ grid-template-columns:1fr; }
+  .queue-bottle{ position:static; order:-1; }
+  .zoo-num{ top:calc(56px + env(safe-area-inset-top,0px)); }
+}
+
+@media (max-width:760px){
+  body{ font-size:1rem; }
+  .step{ align-items:flex-end; padding:0 4vw 9vh; }
+  .card{ max-width:none; width:100%; }
+  .card .when{ font-size:1.45rem; }
+  .hero-title{ bottom:44%; }
+  .hero-sub{ top:58%; }
+  .stage-date{ top:calc(60px + env(safe-area-inset-top,0px)); font-size:1.5rem; }
+  .legend{ top:calc(60px + 2.6rem + env(safe-area-inset-top,0px)); }
+  .sim-inner,.calc-inner,footer .cols{ grid-template-columns:1fr; }
+  .stage-note{ display:none; }
+}
+@media (prefers-reduced-motion:reduce){
+  .card{ transition:none; }
+  #pipeSvg.flowing .flow{ animation:none; }
+}
+</style>
+</head>
+<body>
+<div id="progress" aria-hidden="true"></div>
+
+<button class="sound-btn" id="soundBtn" type="button" aria-pressed="false">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path class="wave" d="M15.5 8.5a5 5 0 0 1 0 7"/><path class="wave" d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+  <span>Увімкнути звук</span>
+</button>
+
+<header class="hero" id="hero" data-sound="water">
+  <h1 class="hero-title"><span>Південь</span><span>і вода</span></h1>
+  <canvas id="heroCanvas" aria-hidden="true"></canvas>
+  <div class="hero-sub">
+    <p class="lead">Як війна забрала воду в Миколаєва й Каховського моря, і що виросло там, де вона була.</p>
+    <p class="meta">Інтерактивна історія для конкурсу творчих робіт «Людина. Безпека. Довкілля.», рубрика «Екологія безпеки».</p>
+    <p class="meta">Поліна Антипова, ЧНУ імені Петра Могили, ФКН, група 402</p>
+    <p class="hint">Гортайте повільно. Зі звуком і в навушниках виходить краще.</p>
+  </div>
+</header>
+
+<main>
+<section class="intro" data-sound="water" aria-labelledby="p1">
+  <div class="intro-inner">
+    <span class="part">Частина 1</span>
+    <h2 id="p1">Солона вода</h2>
+    <p>Пів мільйона людей у Миколаєві з квітня 2022 року відкривають кран і не можуть пити те, що з нього тече. Навіть зараз, у листопаді 2026-го.</p>
+  </div>
+</section>
+
+<section class="scrolly" id="salt" data-sound="water">
+  <div class="stage">
+    <canvas id="burstCanvas" aria-hidden="true"></canvas>
+    <div class="burst-labels" id="burstLabels" aria-hidden="true">
+      <div class="burst-label" id="blLeft"><b>До війни</b><span>2,5 аварії на добу</span><br><span class="count" id="cntLeft">доба 1, аварій 0</span></div>
+      <div class="burst-label" id="blRight"><b>Солона вода</b><span>15 аварій на добу</span><br><span class="count" id="cntRight">доба 1, аварій 0</span></div>
+    </div>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="card"><span class="when">12 квітня 2022</span><p>Росіяни підривають водогін, що качав воду з Дніпра. Майже місяць у трубах немає нічого.</p><p>Люди набирають воду в річках, стоять у довгих чергах до джерел, чекають волонтерів із Вознесенська й Одеси.</p></div></div>
+    <div class="step"><div class="card"><span class="when">Травень 2022</span><p>У труби пускають воду з лиману. Солі в ній лише на 20-30% менше, ніж у морській.</p><p>Митися нею можна. Пити ні.</p></div></div>
+    <div class="step"><div class="card"><span class="when">2022 рік</span><p>Сіль роз’їдає труби й сантехніку. До війни водоканал мав у середньому <strong>2,5 аварії на добу</strong>, тепер <strong>15</strong>.</p><p>Праворуч та сама мережа на солоній воді. Кожен спалах це новий порив.</p></div></div>
+    <div class="step"><div class="card"><span class="when">Листопад 2022</span><p>Через десять днів після звільнення Херсона воду з Дніпра пускають знову. Через два тижні водогін знову під обстрілами.</p><p>До травня 2023 року насосну станцію остаточно знищують ракети.</p></div></div>
+  </div>
+</section>
+
+<section class="queue" id="queue" data-sound="queue" aria-labelledby="qH">
+  <div class="queue-inner">
+    <div class="queue-text">
+      <h3 id="qH">Баклашка</h3>
+      <p class="q-lead">Відтоді воду для пиття миколаївці носять самі. Шестилітрові баклашки, візки, черги біля точок видачі. Щодня.</p>
+      <p>Натисни й тримай кнопку, щоб набрати баклашку. Кожна набрана відкриває ще одну історію.</p>
+      <div class="q-stats" aria-live="polite"><span id="qCount">0 баклашок</span><span id="qKg">0 кг</span></div>
+      <ol class="q-facts" id="qFacts"></ol>
+    </div>
+    <div class="queue-bottle">
+      <svg id="bottleSvg" viewBox="0 0 200 300" aria-hidden="true">
+        <defs><clipPath id="btlClip"><path d="M86,40 h28 v16 c0,12 46,18 46,42 v175 a12,12 0 0 1 -12,12 h-96 a12,12 0 0 1 -12,-12 v-175 c0,-24 46,-30 46,-42 z"/></clipPath></defs>
+        <path d="M86,40 h28 v16 c0,12 46,18 46,42 v175 a12,12 0 0 1 -12,12 h-96 a12,12 0 0 1 -12,-12 v-175 c0,-24 46,-30 46,-42 z" fill="var(--bg)" opacity=".7"/>
+        <path id="btlFill" d="M0,285 L200,285 L200,300 L0,300 Z" fill="var(--water)" clip-path="url(#btlClip)"/>
+        <g stroke="var(--ink)" stroke-width="1.5" opacity=".45">
+          <line x1="40" y1="254" x2="52" y2="254"/><line x1="40" y1="223" x2="52" y2="223"/><line x1="40" y1="192" x2="52" y2="192"/><line x1="40" y1="161" x2="52" y2="161"/><line x1="40" y1="130" x2="52" y2="130"/><line x1="40" y1="99" x2="52" y2="99"/>
+        </g>
+        <g font-family="system-ui,sans-serif" font-size="11" fill="var(--muted)"><text x="56" y="258">1 л</text><text x="56" y="165">4 л</text><text x="56" y="103">6 л</text></g>
+        <path d="M86,40 h28 v16 c0,12 46,18 46,42 v175 a12,12 0 0 1 -12,12 h-96 a12,12 0 0 1 -12,-12 v-175 c0,-24 46,-30 46,-42 z" fill="none" stroke="var(--ink)" stroke-width="3"/>
+        <rect x="82" y="16" width="36" height="26" rx="4" fill="var(--fresh)" stroke="var(--ink)" stroke-width="3"/>
+        <text id="btlL" x="100" y="200" text-anchor="middle" font-family="Georgia,serif" font-size="30" fill="var(--ink)">0 л</text>
+      </svg>
+      <button class="btn hold" id="holdBtn" type="button">Тримай, щоб набрати</button>
+      <p class="q-hint">Або тримай пробіл, коли кнопка у фокусі.</p>
+    </div>
+  </div>
+</section>
+
+<section class="gallery" id="gallery" hidden aria-labelledby="galH">
+  <h3 id="galH">Миколаїв, 2026. Фото авторки</h3>
+  <div class="gal" id="gal"></div>
+</section>
+
+<section class="scrolly" id="pipe" data-sound="water">
+  <div class="stage">
+    <svg id="pipeSvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Схема старого і нового водогонів Миколаєва">
+      <path class="sea" d="M0,610 C140,600 300,640 410,700 L0,700 Z"/>
+      <path class="river" stroke-width="10" d="M405,-10 C420,90 380,170 420,250 C455,320 470,385 515,452"/>
+      <path class="river" stroke-width="34" d="M515,452 C545,520 505,605 440,710"/>
+      <path class="river" stroke-width="6" d="M770,160 C705,255 645,330 605,398 C583,437 560,455 532,463"/>
+      <path class="river" stroke-width="22" d="M1010,320 C945,400 932,470 902,540 C880,602 860,652 822,710"/>
+      <text class="label" x="440" y="205">Південний Буг</text>
+      <text class="label" x="705" y="245">Інгул</text>
+      <text class="label" x="925" y="430">Дніпро</text>
+      <text class="label" x="150" y="672">Дніпровсько-Бузький лиман</text>
+
+      <g id="oldGroup">
+        <path class="old" d="M902,522 C800,522 680,502 552,474"/>
+        <path class="breakx" d="M748,500 l18,18 M766,500 l-18,18"/>
+        <path class="breakx" d="M648,483 l18,18 M666,483 l-18,18"/>
+        <text class="small" x="610" y="560">Старий водогін з Дніпра,</text>
+        <text class="small" x="610" y="584">зруйнований у квітні 2022</text>
+      </g>
+
+      <path id="newPipe" class="new" d="M392,58 C356,140 348,222 385,292 C416,352 452,410 507,456"/>
+      <path id="newFlow" class="flow" d="M392,58 C356,140 348,222 385,292 C416,352 452,410 507,456"/>
+      <g id="pumps"></g>
+      <g class="reveal" id="intakeLbl"><text class="small" x="410" y="50">Водозабір у Новій Одесі</text></g>
+      <g class="reveal" id="lenLbl"><text class="small" x="196" y="300">новий водогін,</text><text class="small" x="196" y="324">майже 68 км</text></g>
+      <g class="reveal" id="pumpLbl"><text class="small" x="196" y="380">1, 2, 3: насосні станції</text></g>
+
+      <g class="plant" id="plant"><rect x="452" y="398" width="30" height="22"/><text class="small" x="300" y="415">очисні споруди</text></g>
+      <circle class="rust-ring" cx="528" cy="466" r="40"/>
+      <circle class="city" cx="528" cy="466" r="22"/>
+      <g class="reveal" id="rustLbl"><text class="small rust-t" x="495" y="532" text-anchor="end">1200 км пошкоджених сіллю труб,</text><text class="small rust-t" x="495" y="556" text-anchor="end">пити з крана досі не можна</text></g>
+      <text class="city-label" x="566" y="455">Миколаїв</text>
+
+      <g transform="translate(950,110)"><path d="M0,30 L10,0 L20,30 L10,24 Z" fill="var(--muted)"/><text class="small" x="4" y="52">Пн</text></g>
+      <text class="small" x="985" y="690" text-anchor="end">схема, не в масштабі</text>
+    </svg>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="card"><span class="when">2024</span><p>Держава виділяє 8,7 млрд грн на новий водогін з Південного Бугу, від Нової Одеси. Зрештою він обійдеться в 6,5 млрд.</p></div></div>
+    <div class="step"><div class="card"><span class="when">Кінець літа 2025</span><p>Майже 68 кілометрів труб і три насосні станції готові.</p></div></div>
+    <div class="step"><div class="card"><span class="when">Жовтень 2025</span><p>Уперше від початку війни в кранах прісна вода. Не солона.</p><p>Але прісна ще не означає питна.</p></div></div>
+    <div class="step"><div class="card"><span class="when">Червень 2026</span><p>Добудовано очисні споруди. Міністр розвитку громад і територій Олексій Кулеба урочисто заявляє:</p><p class="quote">«Миколаїв знову має якісну питну воду»</p></div></div>
+    <div class="step"><div class="card"><span class="when">Листопад 2026</span><p>Пити з крана досі заборонено. З очисних виходить чиста вода, але дорогою до квартир вона псується: сіль пошкодила близько 1200 км міських труб.</p><p>З 2 листопада мережі промивають хлором. Це може тривати до трьох місяців.</p></div></div>
+  </div>
+</section>
+
+<section class="intro" data-sound="water" aria-labelledby="p2">
+  <div class="intro-inner">
+    <span class="part">Частина 2</span>
+    <h2 id="p2">Вода, що пішла</h2>
+    <p>Понад шістдесят років на Дніпрі стояло Каховське водосховище. Місцеві називали його морем. Одного червневого ранку його не стало.</p>
+  </div>
+</section>
+
+<section class="scrolly" id="drain" data-sound="drain">
+  <div class="stage">
+    <canvas id="drainCanvas" aria-hidden="true"></canvas>
+    <div class="stage-date" id="drainDate" aria-hidden="true">Травень 2023</div>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="card"><span class="when">Травень 2023</span><p>Водосховище ще повне. Перед тобою поперечний розріз долини: вода, під нею дно, а внизу старе русло Дніпра.</p></div></div>
+    <div class="step"><div class="card"><span class="when">6 червня 2023</span><p>Росія підриває греблю Каховської ГЕС. Один херсонець потім розповідав, що о пів на шосту ранку його розбудив сусід із цією новиною.</p></div></div>
+    <div class="step"><div class="card"><span class="when">Червень 2023</span><p>Рівень падає день за днем. З-під води виходять піски й мул, які шість десятиліть лежали на дні.</p></div></div>
+    <div class="step"><div class="card"><span class="when">Літо 2023</span><p>Замість моря лишаються русло, озера й болота. Дно тріскається на сонці.</p></div></div>
+  </div>
+</section>
+
+<section class="intro" data-sound="flood" aria-labelledby="pDown">
+  <div class="intro-inner">
+    <h2 id="pDown" class="h-mid">Вниз за течією</h2>
+    <p>Вода, що пішла з водосховища, мала кудись подітися. Вона рушила на села і на Херсон.</p>
+  </div>
+</section>
+
+<section class="scrolly" id="flood" data-sound="flood">
+  <div class="stage">
+    <canvas id="floodCanvas" aria-hidden="true"></canvas>
+    <div class="stage-date" id="floodDate" aria-hidden="true">6 червня 2023</div>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="card"><span class="when">6 червня 2023</span><p>Вода йде вниз за течією. У прибережних селах і в херсонському мікрорайоні Корабел вона піднімається щогодини.</p></div></div>
+    <div class="step"><div class="card"><span class="when">8 червня</span><p>Середній рівень підтоплення на Херсонщині сягає <strong>5,6 метра</strong>. Під водою 600 км².</p></div></div>
+    <div class="step"><div class="card"><span class="when">Евакуація</span><p>Лише з Корабела вивозять майже півтори тисячі людей, і все це під російськими обстрілами.</p><p>Рятувальники врятували 716 людей, серед них 30 дітей.</p></div></div>
+    <div class="step"><div class="card"><span class="when">Лівий берег</span><p>Найбільше постраждав окупований лівий берег: там 68% затопленої площі.</p><p>Окупаційна влада визнала 59 загиблих. Розслідування агентства AP показало, що лише в Олешках їх щонайменше сотні.</p></div></div>
+    <div class="step"><div class="card"><span class="when">Миколаївщина</span><p>Вода дійшла й сюди. У Снігурівській громаді підтопило 11 сіл, річка піднялася на 5,5 метра. У Василівці загинув чоловік, який відмовився від евакуації.</p></div></div>
+  </div>
+</section>
+
+<section class="scrolly" id="zoo" data-sound="zoo">
+  <div class="stage">
+    <canvas id="zooCanvas" aria-hidden="true"></canvas>
+    <div class="zoo-num" id="zooNum" aria-hidden="true"><b>300</b><span>тварин жили в зоопарку</span></div>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="card"><span class="when">«Казкова діброва»</span><p>У зоопарку в окупованій Новій Каховці жили близько 300 тварин. Кожна точка тут одна з них.</p></div></div>
+    <div class="step"><div class="card"><span class="when">6 червня 2023</span><p>Вода затоплює зоопарк повністю. Випустити тварин із вольєрів ніхто не міг.</p></div></div>
+    <div class="step"><div class="card"><span class="when">Ті, хто вибрався</span><p>Урятуватися змогли лише лебеді, качки та кілька інших тварин. Лебедя, який вилупився за п’ять днів до того, врятувати не вдалося.</p></div></div>
+    <div class="step"><div class="card"><span class="when">У плавнях</span><p>Гинули й дикі тварини: коні, олені, лані, кабани, козулі, бобри, лисиці, зайці.</p><p>Був сезон розмноження, тож багато хто так і не народився.</p></div></div>
+    <div class="step"><div class="card"><span class="when">Порятунок</span><p>Волонтери вивезли із затоплених місць понад 500 тварин. Поліцейський витягнув прив’язаного пса, який стояв у воді по шию.</p><p>Ще одного собаку прибило аж до Одеси на уламках дощок. Він вижив.</p></div></div>
+  </div>
+</section>
+
+<section class="intro" data-sound="wind" aria-labelledby="p3">
+  <div class="intro-inner">
+    <span class="part">Частина 3</span>
+    <h2 id="p3">Ліс, якого не було</h2>
+    <p>А далі сталося те, чого не очікували навіть науковці.</p>
+  </div>
+</section>
+
+<section class="scrolly" id="forest" data-sound="forest">
+  <div class="stage">
+    <div class="tilt-wrap"><div class="tilt" id="tilt"><canvas id="ndviCanvas" aria-hidden="true"></canvas></div></div>
+    <canvas id="treesCanvas" aria-hidden="true"></canvas>
+    <div class="stage-date" id="ndviDate" aria-hidden="true">Травень 2023</div>
+    <div class="legend" aria-hidden="true">Індекс рослинності (NDVI)<div class="bar"></div><div class="ends"><span>вода, ґрунт</span><span>ліс</span></div></div>
+    <div class="stage-note" id="ndviNote">Схематична модель за описами науковців. Справжні знімки: Copernicus Browser, Sentinel-2.</div>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="card"><span class="when">Паростки</span><p>Голе дно вкривається вербами. Вони ростуть так швидко, що вчені порівнюють їх із бамбуковим гаєм.</p></div></div>
+    <div class="step"><div class="card"><span class="when">Живі річки</span><p>Відновлюються старі річки, з’являються озера й болота, повертаються осетри.</p></div></div>
+    <div class="step"><div class="card"><span class="when">150 тисяч гектарів</span><p>За три роки на дні виріс дикий ліс площею понад 2000 км². Це більш ніж удвічі більше за площу Києва.</p></div></div>
+    <div class="step"><div class="card"><span class="when">Мешканці</span><p>Науковці фіксують кабанів, оленів, червонокнижних полозів і водоплавних птахів.</p></div></div>
+    <div class="step"><div class="card"><span class="when">Знахідки</span><p>Дно відкрило тисячі археологічних пам’яток. Україна і Швеція підписали меморандум, щоб їх задокументувати й зберегти.</p></div></div>
+    <div class="step"><div class="card"><span class="when">Дрони над лісом</span><p>Повністю дослідити територію досі неможливо: над нею постійно літають російські дрони. Природа відновлюється, а війна нікуди не ділася.</p></div></div>
+  </div>
+</section>
+
+<section class="compare-sec" data-sound="forest" aria-labelledby="cmpH">
+  <div class="compare-head">
+    <h3 id="cmpH">Те саме місце з висоти</h3>
+    <p>Перетягни межу. Ліворуч Каховське водосховище у 2020 році, праворуч його колишнє дно з новою рослинністю у 2024-му.</p>
+  </div>
+  <div class="compare" id="compare">
+    <canvas class="before" id="cmpBefore" aria-hidden="true"></canvas>
+    <img class="before real-image" id="cmpPhotoBefore" alt="Каховське водосховище у 2020 році, супутниковий знімок Landsat / Copernicus">
+    <canvas class="after" id="cmpAfter" aria-hidden="true"></canvas>
+    <img class="after real-image" id="cmpPhotoAfter" alt="Колишнє дно Каховського водосховища у 2024 році, супутниковий знімок Landsat / Copernicus">
+    <div class="handle" aria-hidden="true"></div>
+    <span class="tag l">2020 рік</span><span class="tag r">2024 рік</span>
+    <input type="range" min="0" max="100" value="50" id="cmpRange" aria-label="Межа між супутниковими знімками 2020 та 2024 років">
+  </div>
+</section>
+
+<section class="intro" data-sound="quiet" aria-labelledby="p4">
+  <div class="intro-inner">
+    <span class="part">Частина 4</span>
+    <h2 id="p4">Ціна і ти</h2>
+    <p>Ліс на дні і вода в кранах показують, що відновлення можливе. Але шкода довкіллю накопичується щодня.</p>
+  </div>
+</section>
+
+<section class="cost" data-sound="quiet" aria-labelledby="costH">
+  <div class="cost-inner">
+    <h3 id="costH" class="visually-hidden">Лічильник шкоди довкіллю</h3>
+    <p class="lbl">Поки ти на цій сторінці, війна завдала довкіллю України шкоди приблизно на</p>
+    <div class="counter" id="counter" aria-live="off">0 грн</div>
+    <p class="counter-time" id="counterTime">за 0 с</p>
+    <p class="small">Розрахунок за темпом одного тижня: з 12 по 19 червня 2026 року підтверджені збитки зросли на 51,9 млрд грн, це близько 86 тисяч гривень щосекунди. Загалом вони вже перевищили 7 трлн грн. Тож лічильник показує оцінку, а не точний облік.</p>
+    <p class="small">Лише пожежі на об’єктах енергетики Миколаївщини з січня по травень 2026 року завдали довкіллю шкоди понад 6,8 млн грн.</p>
+  </div>
+</section>
+
+<section class="sim" data-sound="quiet" aria-labelledby="simH">
+  <div class="sim-inner">
+    <div>
+      <h3 id="simH">Твоя доба без води</h3>
+      <p class="intro-p">Уяви Миколаїв, листопад 2026. З крана пити не можна, а в тебе 8 літрів чистої води на добу. Розподіли їх між потребами.</p>
+      <div id="sliders"></div>
+      <button class="btn" id="simCheck" type="button">Перевірити розподіл</button>
+      <button class="btn ghost" id="simReset" type="button">Почати знову</button>
+      <div class="feedback" id="simFeedback" aria-live="polite"></div>
+    </div>
+    <div class="can-wrap" aria-hidden="true">
+      <svg viewBox="0 0 160 220">
+        <defs><clipPath id="canClip"><path d="M30,40 h84 l16,16 v146 a8,8 0 0 1 -8,8 h-100 a8,8 0 0 1 -8,-8 v-146 z"/></clipPath></defs>
+        <path d="M30,40 h84 l16,16 v146 a8,8 0 0 1 -8,8 h-100 a8,8 0 0 1 -8,-8 v-146 z" fill="var(--bg)" stroke="var(--ink)" stroke-width="3"/>
+        <rect id="canFill" x="0" y="50" width="160" height="170" fill="var(--water)" clip-path="url(#canClip)"/>
+        <path d="M30,40 h84 l16,16 v146 a8,8 0 0 1 -8,8 h-100 a8,8 0 0 1 -8,-8 v-146 z" fill="none" stroke="var(--ink)" stroke-width="3"/>
+        <rect x="44" y="18" width="30" height="22" rx="3" fill="var(--bg)" stroke="var(--ink)" stroke-width="3"/>
+        <path d="M86,40 v-14 h24 v14" fill="none" stroke="var(--ink)" stroke-width="3"/>
+      </svg>
+      <div class="can-left" id="canLeft">лишилось 8 л</div>
+    </div>
+  </div>
+</section>
+
+<section class="calc" data-sound="quiet" aria-labelledby="calcH">
+  <div class="calc-inner">
+    <div>
+      <h3 id="calcH">Порахуй запас для своєї родини</h3>
+      <p>Рекомендують мати вдома запас води щонайменше на 72 години. Скільки вас?</p>
+      <div class="stepper">
+        <button type="button" id="ppMinus" aria-label="Менше людей">−</button>
+        <output id="ppOut" aria-live="polite">3</output>
+        <button type="button" id="ppPlus" aria-label="Більше людей">+</button>
+        <span id="ppWord">людини</span>
+      </div>
+      <div class="calc-out">
+        <div><b id="drinkOut">27 л</b>питної води на три доби, по 3 л на людину щодня</div>
+        <div><b id="techOut">від 90 до 108 л</b>технічної води для гігієни й готування, від 10 до 12 л на людину щодня</div>
+      </div>
+    </div>
+    <div>
+      <h3 style="font-size:1.6rem">Що ще варто знати</h3>
+      <ul class="tips">
+        <li>Окремо підпиши тару для питної і для технічної води.</li>
+        <li>Оновлюй запас кожні пів року.</li>
+        <li>Коли вода зникла, стеж за повідомленнями водоканалу, місцевої влади й ДСНС: там пишуть, де пункти підвезення.</li>
+        <li>Якщо підозрюєш хімічне забруднення води, шукай інше джерело і повідом екстрені служби.</li>
+        <li>Перед тим як набирати воду, вимий руки з милом.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="final" data-sound="quiet" aria-labelledby="finH">
+  <h2 id="finH">Безпека починається з мене</h2>
+  <p>У миколаївських кранах уже прісна вода, але ще не питна. На дні Каховки виріс ліс, але над ним літають дрони. Відновлення можливе, проте саме воно не настає. Безпека починається з того, що ми знаємо, бережемо і готуємося.</p>
+</section>
+</main>
+
+<footer data-sound="quiet">
+  <div class="cols">
+    <div>
+      <h3>Джерела</h3>
+      <ol>
+        <li><a href="https://www.kmu.gov.ua/news/u-mykolaievi-zavershyly-stvorennia-suchasnoi-systemy-vodopostachannia-maizhe-500-tysiach-meshkantsiv-zabezpecheni-iakisnoiu-pytnoiu-vodoiu-oleksii-kuleba">Кабінет Міністрів України. У Миколаєві завершили створення сучасної системи водопостачання (18.06.2026)</a></li>
+        <li><a href="https://suspilne.media/348166-vodopostacanna-v-mikolaevi-so-vidomo-2/">Суспільне Миколаїв. Водопостачання в Миколаєві. Що відомо</a></li>
+        <li><a href="https://suspilne.media/468161-minuv-rik-ak-mikolaiv-zabezpecili-tehnicnou-vodou/">Суспільне Миколаїв. Минув рік: як Миколаїв забезпечили технічною водою</a></li>
+        <li><a href="https://suspilne.media/289714-vodopostacanna-v-mikolaevi-so-vidomo/">Суспільне Миколаїв. Водопостачання в Миколаєві (квітень 2022)</a></li>
+        <li><a href="https://epravda.com.ua/biznes/mikolajiv-vpershe-z-2022-roku-z-centralizovanim-postachannyam-prisnoji-vodi-812561/">Економічна правда. Миколаїв вперше з 2022 року з централізованим постачанням прісної води (07.10.2025)</a></li>
+        <li><a href="https://texty.org.ua/fragments/115820/novyj-vodohin-u-mykolayevi-vpershe-z-2022-roku-zhyteli-otrymayut-prisnu-vodu-v-kranah/">Тексти. Новий водогін у Миколаєві</a></li>
+        <li><a href="https://frontliner.ua/mykolaiv-bez-pytnoi-vody/">Frontliner. Лиман у крані, черги за бутлями: водна криза Миколаєва зсередини (12.06.2025)</a></li>
+        <li><a href="https://www.up.mk.ua/uk/articles/192805">Українська правда. Миколаїв. Майже 7,4 млн літрів за жовтень (листопад 2026)</a></li>
+        <li><a href="https://www.up.mk.ua/uk/articles/184689">Українська правда. Миколаїв. Прісна, але не для пиття (червень 2026)</a></li>
+        <li><a href="https://nikvesti.com/news/municipal/326027-pokholodalo-mikrobiolohiia-stabilizuvalasia-vodokanal-mykolaieva">МикВісті. На водоканалі Миколаєва про хлорування і питну воду (листопад 2026)</a></li>
+        <li><a href="https://korabelov.info/2026/10/630650/vodomerezhi-mykolaieva-khloruvatymut-syru-vodu-ne-mozhna-bude-pyty/">Корабелов.інфо. Водомережі Миколаєва хлоруватимуть (жовтень 2026)</a></li>
+        <li><a href="https://inshe.tv/important/2026-10-02/1020893/">Інше ТВ. Не пити воду з кранів: з очисних виходить чиста, до людей доходить брудна (02.10.2026)</a></li>
+        <li><a href="https://mind.ua/news/20287622-novij-vodogin-dlya-mikolaeva-koshtuvatime-na-30-menshe-nizh-ochikuvalosya-agentstvo-vidnovlennya">Mind. Водогін від Нової Одеси до Миколаєва</a></li>
+        <li><a href="https://suspilne.media/502921-vlada-rf-ne-dala-vivezti-tvarin-z-kazkovoi-dibrovi-ak-trivae-evakuacia-na-hersonsini/">Суспільне. Евакуація на Херсонщині після підриву ГЕС, свідчення</a></li>
+        <li><a href="https://thepage.ua/ua/news/stanom-na-ranok-8-chervnya-2023-rok-zatopleno-600-kv-km-hersonshini">The Page. Станом на 8 червня 2023 року затоплено 600 км² Херсонщини</a></li>
+        <li><a href="https://khor.gov.ua/2023/06/17/36086/">Херсонська ОВА. Оперативна інформація ДСНС на 17 червня 2023</a></li>
+        <li><a href="https://espreso.tv/pidriv-kakhovskoi-ges-kilkist-zagiblikh-zrosla-do-21-lyudini-pidtoplenimi-zalishayutsya-595-budinkiv">Еспресо. Кількість загиблих внаслідок підриву ГЕС (20.06.2023)</a></li>
+        <li><a href="https://news.liga.net/ua/amp/politics/news/ap-na-okupovanii-rf-terytorii-zahynuly-shchonaimenshe-sotni-liudei-vnaslidok-pidryvu-kakhovskoi-hes">LIGA.net. AP: на окупованій території загинули щонайменше сотні людей</a></li>
+        <li><a href="https://adayintheoccupation.substack.com/p/cd9">A Day in the Occupation. Головне за 8 червня 2023</a></li>
+        <li><a href="https://zaxid.net/u_zooparku_kazkova_dibrova_u_noviy_kahovtsi_zaginuli_mayzhe_vsi_tvarini_n1565029">ZAXID.NET. У зоопарку «Казкова діброва» загинули майже всі тварини</a></li>
+        <li><a href="https://glavcom.ua/country/incidents/zatoplenij-zoopark-u-novij-kakhovtsi-dejaki-tvarini-zmohli-vizhiti-video-932777.html">Главком. Затоплений зоопарк у Новій Каховці: деякі тварини вижили</a></li>
+        <li><a href="https://life.pravda.com.ua/society/2023/06/16/254885/">УП.Життя. Збитки від загибелі тварин на Херсонщині (16.06.2023)</a></li>
+        <li><a href="https://life.pravda.com.ua/society/2023/06/10/254780/">УП.Життя. До Одеси на дошках приплив пес із затопленої Херсонщини (10.06.2023)</a></li>
+        <li><a href="https://www.ukrinform.ua/rubric-regions/3721976-z-hersonsini-do-lvova-evakuuvali-majze-170-tvarin.html">Укрінформ. З Херсонщини до Львова евакуювали майже 170 тварин</a></li>
+        <li><a href="https://uanimals.org/znaty-y-diiaty/dovkillia-i-viyna/lis-iakoho-nemaie-bilshe-nide-v-ukraini-shcho-vidbuvaietsia-na-dni-kakhovskoho-vodoskhovyshcha-cherez-try-roky-pislia-katastrofy/">UAnimals. Ліс на дні Каховського водосховища: супутникові знімки 2020 і 2024 років (Landsat / Copernicus)</a></li>
+        <li><a href="https://texty.org.ua/tag/kakhovske-vodoskhovyshche/">Тексти. Матеріали про Каховське водосховище</a></li>
+        <li><a href="https://texty.org.ua/tag/velykyj-luh/">Тексти. Матеріали про Великий Луг</a></li>
+        <li><a href="https://www.unian.ua/ecology/kahovske-vodoshovishche-yaki-tvarini-povertayutsya-na-velikiy-lug-13528776.html">УНІАН. Хто живе у лісі на дні Каховського водосховища (14.10.2026)</a></li>
+        <li><a href="https://www.unian.ua/ecology/velikiy-lug-shcho-vidbuvayetsya-iz-teritoriyeyu-pislya-pidrivu-rosiyanami-kahovskoji-ges-13501719.html">УНІАН. Великий Луг оживає після підриву Каховської ГЕС (16.09.2026)</a></li>
+        <li><a href="https://www.kyivpost.com/uk/post/78759">Kyiv Post. Збитки довкіллю України від війни перевищили 7 трлн грн</a></li>
+        <li><a href="https://freeradio.com.ua/ekolohichni-zbytky-vid-viiny-dlia-ukrainy-perevyshchyly-7-trln-hryven/">Вільне Радіо. Екологічні збитки від війни досягли 7 трлн гривень</a></li>
+        <li><a href="https://nikvesti.com/news/business/322234-ponad-68-mln-derzhkoinspektsiya-nazvala-sumu-zbytkiv-dovkillyu-cherez-rosiyski-ataki-po-enerhetytsi-mykolay">МикВісті. Держекоінспекція про збитки довкіллю через атаки на енергетику Миколаївщини</a></li>
+        <li><a href="https://phc.org.ua/sites/default/files/users/user156/Inf/water/a4_scen_water%201.pdf">Центр громадського здоров’я. Пам’ятка про безпечну воду під час перебоїв</a></li>
+        <li><a href="https://fakty.com.ua/ua/ukraine/20261010-kyyan-zaklykaly-gotuvaty-zapasy-vody-ta-yizhi-cherez-posylennya-obstriliv-energosystemy/">Факти. Рекомендації щодо запасу питної і технічної води (10.10.2026)</a></li>
+        <li><a href="https://pravda.if.ua/ukrayincziv-zaklykayutio-maty-vdoma-trydennyj-zapas-pytnoyi-vody/">Правда.IF. Триденний запас питної води</a></li>
+        <li><a href="https://browser.dataspace.copernicus.eu">Copernicus Browser. Знімки супутників Sentinel-2</a></li>
+      </ol>
+    </div>
+    <div>
+      <h3>Про візуалізації</h3>
+      <p>Розріз долини, затоплене село та модель рослинності побудовані кодом за описами науковців, журналістів і рятувальників. Це ілюстрації, а не супутникові вимірювання. У порівнянні «до і після» використані знімки Landsat / Copernicus із матеріалу UAnimals; без інтернету замість них відображаються схематичні зображення. Звук синтезує сам браузер, без записів.</p>
+      <p>Сайт працює без інтернету: його можна відкрити з флешки.</p>
+      <p>Авторка: Поліна Антипова, ЧНУ імені Петра Могили, 2026.</p>
+    </div>
+  </div>
+</footer>
+<script>
+(() => {
+'use strict';
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+const TH = 0.35;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const DPR = () => Math.min(window.devicePixelRatio || 1, 2);
+const MONTHS = ['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+
+function rng(seed){ let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function hash(x, y, s){ let h = (Math.imul(x | 0, 374761393) + Math.imul(y | 0, 668265263) + Math.imul(s | 0, 1442695041)) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16; return (h >>> 0) / 4294967296; }
+function vnoise(x, y, s){ const xi = Math.floor(x), yi = Math.floor(y); const xf = x - xi, yf = y - yi; const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf); return lerp(lerp(hash(xi, yi, s), hash(xi + 1, yi, s), u), lerp(hash(xi, yi + 1, s), hash(xi + 1, yi + 1, s), u), v); }
+function fbm(x, y, s, o = 4){ let sum = 0, amp = .5, f = 1, n = 0; for (let i = 0; i < o; i++){ sum += amp * vnoise(x * f, y * f, s + i * 17); n += amp; amp *= .5; f *= 2; } return sum / n; }
+
+const C = {};
+function readColors(){
+  const cs = getComputedStyle(document.documentElement);
+  ['bg','bg-2','ink','muted','water-deep','water','water-light','foam','sky','mud','mud-dry','willow','rust','fresh'].forEach(n => { C[n] = cs.getPropertyValue('--' + n).trim(); });
+}
+function hexRgb(h){ h = h.replace('#', ''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+function rgba(hex, a){ const [r, g, b] = hexRgb(hex); return `rgba(${r},${g},${b},${a})`; }
+function mix(h1, h2, t){ const a = hexRgb(h1), b = hexRgb(h2); return `rgb(${Math.round(lerp(a[0], b[0], t))},${Math.round(lerp(a[1], b[1], t))},${Math.round(lerp(a[2], b[2], t))})`; }
+function fit(cv){
+  const d = DPR(), w = cv.clientWidth, h = cv.clientHeight;
+  const W = Math.max(1, Math.round(w * d)), H = Math.max(1, Math.round(h * d));
+  if (cv.width !== W || cv.height !== H){ cv.width = W; cv.height = H; }
+  const ctx = cv.getContext('2d'); ctx.setTransform(d, 0, 0, d, 0, 0);
+  return { ctx, w, h };
+}
+function loadImg(src){ return new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; }); }
+function monthLabel(i){ const tot = 4 + i; return `${MONTHS[tot % 12]} ${2023 + Math.floor(tot / 12)}`; }
+
+const hero = {
+  cv: $('#heroCanvas'), dirty: true,
+  draw(t){
+    const { ctx, w, h } = fit(this.cv);
+    ctx.clearRect(0, 0, w, h);
+    const layers = 5;
+    for (let i = 0; i < layers; i++){
+      const k = i / (layers - 1);
+      const base = h * (0.565 + k * 0.105);
+      ctx.fillStyle = mix(C['water-light'], C['water-deep'], i === 0 ? 0.15 : 0.5 + k * 0.5);
+      ctx.globalAlpha = i === 0 ? 0.55 : 0.94;
+      ctx.beginPath(); ctx.moveTo(0, h);
+      const a1 = 9 - k * 3;
+      for (let x = 0; x <= w + 8; x += 8){
+        const y = base
+          + Math.sin(x * 0.006 + t * (0.5 + k * 0.2) + i * 1.7) * a1
+          + Math.sin(x * 0.017 - t * (0.9 - k * 0.3) + i) * 3
+          + Math.sin(x * 0.0021 + t * 0.21 + i * 2.3) * a1 * 1.4;
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(w, h); ctx.closePath(); ctx.fill();
+    }
+    ctx.fillStyle = C.foam;
+    for (let j = 0; j < 30; j++){
+      const gx = (hash(j, 1, 3) * w + t * 14 * (0.3 + hash(j, 2, 3))) % (w + 40) - 20;
+      const gy = h * (0.6 + hash(j, 4, 3) * 0.37);
+      ctx.globalAlpha = (0.5 + 0.5 * Math.sin(t * 1.4 + j * 2.1)) * 0.32;
+      ctx.fillRect(gx, gy, 8 + hash(j, 5, 3) * 26, 1.5);
+    }
+    ctx.globalAlpha = 1;
+  }
+};
+
+const bursts = {
+  cv: $('#burstCanvas'), step: 0, rects: [], streets: [], nodes: [], panels: [],
+  init(){
+    const r = rng(7);
+    const ang = 0.22, sp = 0.085, R = 0.46;
+    const dirs = [[Math.cos(ang), Math.sin(ang)], [-Math.sin(ang), Math.cos(ang)]];
+    for (const [dx, dy] of dirs){
+      const nx = -dy, ny = dx;
+      for (let o = -R; o <= R; o += sp){
+        const half = Math.sqrt(Math.max(0, R * R - o * o));
+        if (half < 0.04) continue;
+        const cx = 0.5 + nx * o, cy = 0.5 + ny * o;
+        const j1 = (r() - 0.5) * 0.06, j2 = (r() - 0.5) * 0.06;
+        this.streets.push([cx - dx * (half + j1 * 0), cy - dy * half, cx + dx * half, cy + dy * (half + j2 * 0)]);
+      }
+    }
+    for (let i = -6; i <= 6; i++) for (let j = -6; j <= 6; j++){
+      const ox = i * sp, oy = j * sp;
+      const x = 0.5 + ox * dirs[0][0] + oy * dirs[1][0], y = 0.5 + ox * dirs[0][1] + oy * dirs[1][1];
+      if ((x - 0.5) ** 2 + (y - 0.5) ** 2 < (R - 0.05) ** 2) this.nodes.push([x, y]);
+    }
+    this.panels = [
+      { rate: d => (d % 2 ? 3 : 2), day: 0, start: 0, events: [], fired: 0, marks: [], seed: 11 },
+      { rate: () => 15, day: 0, start: 0, events: [], fired: 0, marks: [], seed: 23 }
+    ];
+  },
+  layout(w, h){
+    const mobile = w < 760;
+    if (mobile){
+      const s = Math.min(w * 0.42, h * 0.3), top = h * 0.12, gap = w * 0.06;
+      const x0 = (w - 2 * s - gap) / 2;
+      this.rects = [{ x: x0, y: top, s }, { x: x0 + s + gap, y: top, s }];
+    } else {
+      const x0 = Math.max(w * 0.06 + 440, w * 0.4), x1 = w * 0.95;
+      const gap = 40, s = Math.min((x1 - x0 - gap) / 2, h * 0.52);
+      const start = x0 + (x1 - x0 - 2 * s - gap) / 2, y = h * 0.5 - s * 0.5 - 20;
+      this.rects = [{ x: start, y, s }, { x: start + s + gap, y, s }];
+    }
+    const L = $('#blLeft'), Rt = $('#blRight');
+    [L, Rt].forEach((el, i) => { const rc = this.rects[i]; el.style.left = rc.x + 'px'; el.style.top = (rc.y + rc.s + 10) + 'px'; el.style.width = rc.s + 'px'; });
+  },
+  schedule(p, idx, now){
+    const n = p.rate(p.day);
+    const rr = rng(p.seed * 1000 + p.day);
+    p.events = Array.from({ length: n }, () => ({ at: rr() * 3800, node: this.nodes[Math.floor(rr() * this.nodes.length)] })).sort((a, b) => a.at - b.at);
+    p.fired = 0; p.marks = []; p.start = now;
+  },
+  draw(now){
+    const { ctx, w, h } = fit(this.cv);
+    ctx.clearRect(0, 0, w, h);
+    const DAY = 4000;
+    this.panels.forEach((p, i) => {
+      const rc = this.rects[i]; if (!rc) return;
+      const active = i === 0 || this.step >= 1;
+      if (!p.start || now - p.start > DAY){ if (p.start) p.day++; this.schedule(p, i, now); }
+      const el = now - p.start;
+      ctx.globalAlpha = active ? 1 : 0.35;
+      ctx.beginPath(); ctx.arc(rc.x + rc.s / 2, rc.y + rc.s / 2, rc.s * 0.47, 0, Math.PI * 2);
+      ctx.fillStyle = rgba(C.ink, 0.045); ctx.fill();
+      ctx.strokeStyle = rgba(C.ink, 0.35); ctx.lineWidth = 1.2; ctx.stroke();
+      ctx.strokeStyle = rgba(C.ink, 0.2); ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (const [a, b, c, d] of this.streets){ ctx.moveTo(rc.x + a * rc.s, rc.y + b * rc.s); ctx.lineTo(rc.x + c * rc.s, rc.y + d * rc.s); }
+      ctx.stroke();
+      ctx.strokeStyle = rgba(C['water-light'], 0.9); ctx.lineWidth = Math.max(4, rc.s * 0.035); ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(rc.x + rc.s * 0.12, rc.y + rc.s * 0.16);
+      ctx.bezierCurveTo(rc.x + rc.s * 0.32, rc.y + rc.s * 0.5, rc.x + rc.s * 0.25, rc.y + rc.s * 0.7, rc.x + rc.s * 0.42, rc.y + rc.s * 0.95);
+      ctx.stroke();
+      if (active){
+        if (reduced){
+          p.events.forEach(e => { ctx.fillStyle = C.rust; ctx.beginPath(); ctx.arc(rc.x + e.node[0] * rc.s, rc.y + e.node[1] * rc.s, 4, 0, Math.PI * 2); ctx.fill(); });
+          p.fired = p.events.length;
+        } else {
+          while (p.fired < p.events.length && p.events[p.fired].at <= el){ p.marks.push({ node: p.events[p.fired].node, t0: now }); p.fired++; }
+          for (const m of p.marks){
+            const age = (now - m.t0) / 1000, x = rc.x + m.node[0] * rc.s, y = rc.y + m.node[1] * rc.s;
+            if (age < 1.4){
+              ctx.strokeStyle = rgba(C.rust, 1 - age / 1.4); ctx.lineWidth = 2.5;
+              ctx.beginPath(); ctx.arc(x, y, 5 + age * 24, 0, Math.PI * 2); ctx.stroke();
+            }
+            ctx.fillStyle = rgba(C.rust, age < 0.3 ? 1 : 0.75);
+            ctx.beginPath(); ctx.arc(x, y, age < 0.3 ? 5.5 : 3.5, 0, Math.PI * 2); ctx.fill();
+          }
+        }
+      }
+      ctx.globalAlpha = active ? 1 : 0.35;
+      ctx.fillStyle = rgba(C.ink, 0.15); ctx.fillRect(rc.x, rc.y - 12, rc.s, 3);
+      ctx.fillStyle = i === 0 ? C.water : C.rust; ctx.fillRect(rc.x, rc.y - 12, rc.s * clamp(el / DAY), 3);
+      ctx.globalAlpha = 1;
+      const cnt = i === 0 ? $('#cntLeft') : $('#cntRight');
+      const txt = active ? `доба ${p.day + 1}, аварій ${p.fired}` : 'води в трубах немає';
+      if (cnt.textContent !== txt) cnt.textContent = txt;
+    });
+  }
+};
+
+
+const pipe = {
+  svg: $('#pipeSvg'), path: $('#newPipe'), len: 0, fr: [0.03, 0.45, 0.8], pumps: [],
+  init(){
+    this.len = this.path.getTotalLength();
+    this.path.style.strokeDasharray = `${this.len} ${this.len}`;
+    this.path.style.strokeDashoffset = this.len;
+    const g = $('#pumps'), NS = 'http://www.w3.org/2000/svg';
+    this.fr.forEach((f, i) => {
+      const pt = this.path.getPointAtLength(f * this.len);
+      const c = document.createElementNS(NS, 'circle'); c.setAttribute('cx', pt.x); c.setAttribute('cy', pt.y); c.setAttribute('r', 14); c.setAttribute('class', 'pump');
+      const t = document.createElementNS(NS, 'text'); t.setAttribute('x', pt.x); t.setAttribute('y', pt.y + 1); t.setAttribute('class', 'pump-n'); t.textContent = i + 1;
+      g.appendChild(c); g.appendChild(t); this.pumps.push([c, t]);
+    });
+  },
+  layout(w, h){ this.svg.setAttribute('viewBox', w / h < 0.9 ? '250 0 720 720' : (w < 1000 ? '-120 0 1140 720' : '-400 -10 1420 720')); },
+  update(s){
+    const L1 = s.local(1);
+    const draw = reduced ? (s.step >= 1 ? 1 : 0) : smooth(0.05, 0.85, L1);
+    this.path.style.strokeDashoffset = this.len * (1 - draw);
+    this.pumps.forEach(([c, t], i) => { const on = draw >= this.fr[i] + 0.02; c.classList.toggle('on', on); t.classList.toggle('on', on); });
+    $('#intakeLbl').classList.toggle('on', draw > 0.02);
+    $('#lenLbl').classList.toggle('on', draw > 0.55);
+    $('#pumpLbl').classList.toggle('on', draw > 0.85);
+    this.svg.classList.toggle('flowing', s.step >= 2);
+    $('#plant').classList.toggle('on', s.step >= 3);
+    $('#oldGroup').style.opacity = s.step >= 1 ? 0.5 : 1;
+    this.svg.classList.toggle('spoiled', s.step >= 4);
+    $('#rustLbl').classList.toggle('on', s.step >= 4);
+  }
+};
+
+const drain = {
+  cv: $('#drainCanvas'), FULL: 0.58, level: 0.58, drop: 0, dry: 0, dirty: true, g: [], cracks: [], pools: [], step: 2,
+  ground(x){
+    const u = Math.abs(x - 0.5) * 2;
+    return 0.11 + 0.66 * Math.pow(u, 1.4) + 0.05 * (fbm(x * 5, 0.3, 7) - 0.5)
+      - 0.075 * Math.exp(-(((x - 0.455) / 0.022) ** 2))
+      - 0.04 * Math.exp(-(((x - 0.6) / 0.03) ** 2))
+      - 0.03 * Math.exp(-(((x - 0.35) / 0.025) ** 2));
+  },
+  layout(w){
+    this.g = []; for (let x = 0; x <= w + this.step; x += this.step) this.g.push(this.ground(x / w));
+    const r = rng(5);
+    this.cracks = Array.from({ length: Math.round(w / 8) }, () => ({ x: r(), len: 6 + r() * 14, seg: [r() - 0.5, r() - 0.5, r() - 0.5] }))
+      .filter(c => this.ground(c.x) < this.FULL - 0.01);
+    this.pools = [0.35, 0.6].map(c => {
+      let lo = c; for (let x = c - 0.08; x <= c + 0.08; x += 0.002) if (this.ground(x) < this.ground(lo)) lo = x;
+      const lvl = this.ground(lo) + 0.022;
+      let a = lo, b = lo; while (a > 0 && this.ground(a) < lvl) a -= 0.001; while (b < 1 && this.ground(b) < lvl) b += 0.001;
+      return { a, b, lvl };
+    });
+    this.dirty = true;
+  },
+  Y(f, h){ return this.portrait ? h * (0.7 - f * 0.55) : h * (0.95 - f * 0.8); },
+  draw(t){
+    const { ctx, w, h } = fit(this.cv);
+    this.portrait = w / h < 0.9;
+    if (!this.g.length) this.layout(w);
+    ctx.clearRect(0, 0, w, h);
+    const sky = ctx.createLinearGradient(0, 0, 0, h * 0.6); sky.addColorStop(0, C.sky); sky.addColorStop(1, C.bg);
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = rgba(C.ink, 0.07); ctx.beginPath(); ctx.moveTo(0, h);
+    for (let x = 0; x <= w; x += 12) ctx.lineTo(x, this.Y(0.8 + 0.06 * fbm(x / w * 4, 9, 2), h));
+    ctx.lineTo(w, h); ctx.fill();
+    const L = this.level, ys = this.Y(L, h), amp = 2.5;
+    const wg = ctx.createLinearGradient(0, ys, 0, h); wg.addColorStop(0, C.water); wg.addColorStop(1, C['water-deep']);
+    ctx.fillStyle = wg; ctx.beginPath(); ctx.moveTo(0, h);
+    for (let x = 0; x <= w + 6; x += 6) ctx.lineTo(x, ys + Math.sin(x * 0.03 + t * 1.6) * amp + Math.sin(x * 0.011 - t) * amp);
+    ctx.lineTo(w, h); ctx.closePath(); ctx.fill();
+    for (const p of this.pools){
+      if (L >= p.lvl) continue;
+      ctx.fillStyle = C.water; const py = this.Y(p.lvl, h);
+      ctx.fillRect(p.a * w, py, (p.b - p.a) * w, h - py);
+    }
+    const gg = ctx.createLinearGradient(0, this.Y(0.7, h), 0, h); gg.addColorStop(0, C.mud); gg.addColorStop(1, mix(C.mud, C.ink, 0.45));
+    ctx.fillStyle = gg; ctx.beginPath(); ctx.moveTo(0, h);
+    this.g.forEach((f, i) => ctx.lineTo(i * this.step, this.Y(f, h)));
+    ctx.lineTo(w, h); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = rgba(C.ink, 0.08); ctx.lineWidth = 1;
+    for (const off of [16, 38, 70]){ ctx.beginPath(); this.g.forEach((f, i) => { const y = this.Y(f, h) + off; i ? ctx.lineTo(i * this.step, y) : ctx.moveTo(0, y); }); ctx.stroke(); }
+
+    const dryCol = mix(C.mud, C['mud-dry'], this.dry), shore = mix(C.willow, C.mud, 0.35);
+    for (let i = 0; i < this.g.length; i++){
+      const f = this.g[i], x = i * this.step, y = this.Y(f, h);
+      ctx.fillStyle = f >= this.FULL ? shore : (f > L ? dryCol : rgba(C['water-deep'], 0.5));
+      ctx.fillRect(x, y, this.step + 0.5, f >= this.FULL ? 6 : 5);
+    }
+    if (this.dry > 0.05){
+      ctx.strokeStyle = rgba(C.ink, 0.45 * this.dry); ctx.lineWidth = 1.2;
+      for (const c of this.cracks){
+        const f = this.ground(c.x); if (f <= L + 0.01) continue;
+        if (this.pools.some(p => L < p.lvl && c.x > p.a && c.x < p.b)) continue;
+        const x = c.x * w, y = this.Y(f, h) + 1, l = c.len * this.dry;
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + c.seg[0] * 4, y + l * 0.4); ctx.lineTo(x + c.seg[1] * 5, y + l * 0.75); ctx.lineTo(x + c.seg[2] * 3, y + l); ctx.stroke();
+      }
+    }
+
+    const ghost = smooth(0.04, 0.25, this.drop);
+    if (ghost > 0){
+      let a = 0, b = w; for (let i = 0; i < this.g.length; i++) if (this.g[i] < this.FULL){ a = i * this.step; break; }
+      for (let i = this.g.length - 1; i >= 0; i--) if (this.g[i] < this.FULL){ b = i * this.step; break; }
+      const y = this.Y(this.FULL, h);
+      ctx.save(); ctx.globalAlpha = ghost; ctx.setLineDash([7, 7]); ctx.strokeStyle = C.water; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(a, y); ctx.lineTo(b, y); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = C.muted; ctx.font = `500 ${w < 760 ? 12 : 14}px ${getComputedStyle(document.body).fontFamily}`;
+      ctx.textAlign = 'right'; ctx.fillText('рівень води до 6 червня 2023', b - 8, y - 10);
+      ctx.restore();
+    }
+  }
+};
+
+const ndvi = {
+  NW: 512, NH: 320, XA: 0.1, XB: 0.9, off: document.createElement('canvas'), real: null, lut: {},
+  build(){
+    const { NW, NH } = this, N = NW * NH;
+    this.inside = new Uint8Array(N); this.water = new Uint8Array(N); this.est = new Float32Array(N); this.rel = new Float32Array(N);
+    this.pool = new Float32Array(N); this.land = new Float32Array(N); this.jit = new Float32Array(N); this.tex = new Float32Array(N);
+    const { XA, XB } = this;
+    const yc = x => 0.8 - 0.6 * x + 0.05 * Math.sin(x * 8.5);
+    const hw = x => (x < XA || x > XB) ? 0 : (0.035 + 0.16 * Math.pow(Math.sin(Math.PI * (x - XA) / (XB - XA)), 0.85)) * (0.8 + 0.4 * fbm(x * 4, 2.2, 11));
+    this.yc = yc;
+    for (let j = 0; j < NH; j++) for (let i = 0; i < NW; i++){
+      const k = j * NW + i, x = i / NW, y = j / NH;
+      const d = y - yc(x), half = hw(x), edge = half + 0.03 * (fbm(x * 12, y * 12, 3) - 0.5);
+      const inside = half > 0 && Math.abs(d) < edge;
+      const ycm = yc(x) + 0.35 * half * Math.sin(x * 21 + 1.3);
+      const chan = inside && Math.abs(y - ycm) < 0.0065 + 0.003 * vnoise(x * 30, 0, 5);
+      const outerRiver = (x < XA + 0.006 || x > XB - 0.006) && Math.abs(d) < 0.009;
+      this.inside[k] = inside ? 1 : 0; this.water[k] = (chan || outerRiver) ? 1 : 0;
+      const rel = inside ? Math.abs(d) / Math.max(edge, 1e-3) : 1; this.rel[k] = rel;
+      this.est[k] = clamp(0.03 + 0.42 * (1 - rel) + 0.5 * (fbm(x * 7, y * 7, 5) - 0.5), 0.03, 0.78);
+      this.pool[k] = fbm(x * 10, y * 10, 21);
+      const fx = x * 30 + 9 * y, fy = y * 20;
+      const road = (fx % 1) < 0.05 || (fy % 1) < 0.06;
+      this.land[k] = road ? 0.12 : (fbm(x * 5, y * 5, 31) > 0.68 ? 0.17 : 0.17 + 0.33 * hash(Math.floor(fx), Math.floor(fy), 9));
+      this.tex[k] = fbm(x * 26, y * 26, 41);
+      this.jit[k] = (hash(i, j, 77) - 0.5) * 0.07;
+    }
+    this.off.width = NW; this.off.height = NH;
+    this.img = this.off.getContext('2d').createImageData(NW, NH);
+    const ramp = stops => { const out = new Uint8ClampedArray(256 * 3); for (let v = 0; v < 256; v++){ const t = v / 255; let a = stops[0], b = stops[stops.length - 1]; for (let s = 0; s < stops.length - 1; s++) if (t >= stops[s][0] && t <= stops[s + 1][0]){ a = stops[s]; b = stops[s + 1]; break; } const f = b[0] === a[0] ? 0 : clamp((t - a[0]) / (b[0] - a[0])); const A = hexRgb(a[1]), B = hexRgb(b[1]); for (let c = 0; c < 3; c++) out[v * 3 + c] = lerp(A[c], B[c], f); } return out; };
+    this.lut.ndvi = { ramp: ramp([[0, '#A38C69'], [0.2, '#CDBE8A'], [0.4, '#A6BD5C'], [0.62, '#3E7D34'], [0.9, '#1F5A28'], [1, '#174A20']]), water: hexRgb('#2E5E74') };
+    this.lut.true = { ramp: ramp([[0, '#B5A586'], [0.2, '#C4B790'], [0.4, '#98A56A'], [0.62, '#5D7B3F'], [0.9, '#3C592C'], [1, '#33502A']]), water: hexRgb('#29525C') };
+  },
+  compute(t, mode){
+    const { NW, NH } = this, N = NW * NH, d = this.img.data, P = this.lut[mode];
+    const m = t * 41, moy = (4 + m) % 12;
+    const season = 0.62 + 0.38 * Math.cos(2 * Math.PI * (moy - 6.5) / 12);
+    const drained = smooth(0.012, 0.04, t), poolThr = 0.6 + 0.2 * smooth(0.04, 0.75, t);
+    for (let k = 0; k < N; k++){
+      let isWater = this.water[k] === 1, v = 0;
+      if (!isWater){
+        if (this.inside[k]){
+          if (this.rel[k] < 1 - drained * 1.05 || this.pool[k] > poolThr) isWater = true;
+          else {
+            const e = this.est[k], g = smooth(e, e + 0.3, t);
+            v = 0.05 + 0.84 * g * (0.25 + 0.75 * season) * (0.8 + 0.35 * this.tex[k]) + this.jit[k] - (t < 0.08 ? 0.05 : 0);
+          }
+        } else v = this.land[k] * (0.55 + 0.45 * season) + this.jit[k];
+      }
+      const o = k * 4;
+      if (isWater){ d[o] = P.water[0]; d[o + 1] = P.water[1]; d[o + 2] = P.water[2]; }
+      else { const li = Math.round(clamp(v) * 255) * 3; d[o] = P.ramp[li]; d[o + 1] = P.ramp[li + 1]; d[o + 2] = P.ramp[li + 2]; }
+      d[o + 3] = 255;
+    }
+    this.off.getContext('2d').putImageData(this.img, 0, 0);
+    return this.off;
+  },
+  drawCover(ctx, w, h, src, sw, sh){
+    const s = Math.max(w / sw, h / sh), dw = sw * s, dh = sh * s, ox = (w - dw) / 2, oy = (h - dh) / 2;
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(src, ox, oy, dw, dh);
+    return { s, ox, oy };
+  },
+  renderTo(cv, t, mode, labels){
+    const { ctx, w, h } = fit(cv);
+    if (this.real && mode === 'ndvi'){
+      const f = this.real[Math.round(clamp(t) * (this.real.length - 1))];
+      this.drawCover(ctx, w, h, f.img, f.img.naturalWidth, f.img.naturalHeight);
+      return f.label;
+    }
+    const src = this.compute(t, mode);
+    const tr = this.drawCover(ctx, w, h, src, this.NW, this.NH);
+    if (labels){
+      ctx.font = `600 ${Math.max(13, Math.round(w / 85))}px ${getComputedStyle(document.body).fontFamily}`;
+      const put = (fx, txt, dx, dy, align) => {
+        const x = tr.ox + fx * this.NW * tr.s, y = tr.oy + this.yc(fx) * this.NH * tr.s;
+        ctx.fillStyle = '#F4F8F6'; ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.textAlign = align; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(16,40,46,.75)';
+        ctx.strokeText(txt, x + dx, y + dy); ctx.fillText(txt, x + dx, y + dy);
+      };
+      put(this.XA, 'Нова Каховка, зруйнована гребля', 8, 26, 'left');
+      put(this.XB, 'Запоріжжя', -10, -14, 'right');
+    }
+    return monthLabel(Math.round(clamp(t) * 41));
+  }
+};
+
+
+const trees = {
+  cv: $('#treesCanvas'), list: [], w: 0, h: 0,
+  build(){
+    const { w, h } = fit(this.cv); this.w = w; this.h = h;
+    const r = rng(42), n = Math.max(6, Math.round(w / 110));
+    this.list = [];
+    for (let i = 0; i < n; i++){
+      const x = (i + 0.5) / n * w + (r() - 0.5) * (w / n) * 0.8;
+      const scale = (0.55 + r() * 0.55) * (h / 300);
+      const birth = 0.2 + r() * 2.4;
+      const tr = rng(i * 101 + 7), segs = [], strands = [], maxD = 6;
+      const branch = (x1, y1, a, len, dep) => {
+        const x2 = x1 + Math.cos(a) * len, y2 = y1 + Math.sin(a) * len;
+        segs.push({ x1, y1, x2, y2, d: dep, w: Math.max(0.7, (maxD - dep + 1) * 1.15 * scale) });
+        if (dep < maxD){
+          const kids = dep < 2 ? 2 : (tr() < 0.6 ? 2 : 3);
+          for (let k = 0; k < kids; k++){
+            let na = a + (tr() - 0.5) * 0.9 + (kids === 2 ? (k ? 0.38 : -0.38) : (k - 1) * 0.5);
+            na = lerp(na, -Math.PI / 2, 0.12);
+            branch(x2, y2, na, len * (0.7 + tr() * 0.1), dep + 1);
+          }
+        } else {
+          for (let k = 0; k < 2; k++){ const dx = (tr() - 0.5) * len * 1.4; strands.push({ x: x2, y: y2, cx: x2 + dx, cy: y2 + len * 0.2, ex: x2 + dx * 1.4, ey: y2 + len * (1.4 + tr() * 1.4) }); }
+        }
+      };
+      branch(x, h - 6, -Math.PI / 2 + (r() - 0.5) * 0.25, 52 * scale, 0);
+      this.list.push({ segs, strands, birth, maxD });
+    }
+  },
+  draw(T){
+    const { ctx, w, h } = fit(this.cv);
+    if (w !== this.w || h !== this.h || !this.list.length) this.build();
+    ctx.clearRect(0, 0, w, h);
+    const grd = smooth(0.05, 0.6, T);
+    ctx.fillStyle = `rgba(18,44,36,${0.55 * grd + 0.15})`;
+    ctx.beginPath(); ctx.moveTo(0, h);
+    for (let x = 0; x <= w; x += 10) ctx.lineTo(x, h - 7 - 4 * vnoise(x / 60, 1, 4));
+    ctx.lineTo(w, h); ctx.fill();
+    ctx.lineCap = 'round';
+    for (const tr of this.list){
+      const g = clamp((T - tr.birth) / 1.3); if (g <= 0) continue;
+      const vis = g * (tr.maxD + 1);
+      ctx.strokeStyle = 'rgba(18,44,36,0.88)';
+      for (const s of tr.segs){
+        if (s.d >= vis) continue;
+        const f = clamp(vis - s.d);
+        ctx.lineWidth = s.w * (0.4 + 0.6 * g);
+        ctx.beginPath(); ctx.moveTo(s.x1, s.y1); ctx.lineTo(lerp(s.x1, s.x2, f), lerp(s.y1, s.y2, f)); ctx.stroke();
+      }
+      if (g > 0.75){
+        ctx.strokeStyle = rgba(C.willow, 0.75 * (g - 0.75) / 0.25); ctx.lineWidth = 1;
+        for (const s of tr.strands){ ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.quadraticCurveTo(s.cx, s.cy, lerp(s.x, s.ex, g), lerp(s.y, s.ey, g)); ctx.stroke(); }
+      }
+    }
+  }
+};
+
+
+const queue = {
+  btn: $('#holdBtn'),
+  facts: [
+    'У Миколаєві близько 200 пунктів видачі води. 90% з них комунальні, решту тримають волонтери.',
+    'Трамваї й тролейбуси щодня возять баки з водою до шести точок: 28 кубометрів на день.',
+    'Дехто набирає воду у відновленому джерелі Турецького фонтану.',
+    'Точки працюють з п’ятої ранку до півночі.',
+    'Лише за жовтень 2026 року миколаївці набрали на точках майже 7,4 млн літрів. Це понад 7 тисяч тонн, перенесених у руках.',
+    'З початку 2026 року таких літрів набралося 84 мільйони. А пити з крана досі не можна.'
+  ],
+  L: 0, n: 0, holding: false, last: 0, pause: 0,
+  init(){
+    const b = this.btn;
+    b.addEventListener('pointerdown', e => { e.preventDefault(); b.setPointerCapture?.(e.pointerId); this.start(); });
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => b.addEventListener(ev, () => this.stop()));
+    b.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat){ e.preventDefault(); this.start(); } });
+    b.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); this.stop(); } });
+    b.addEventListener('blur', () => this.stop());
+    b.addEventListener('contextmenu', e => e.preventDefault());
+    this.paint();
+  },
+  start(){ if (this.holding) return; this.holding = true; this.btn.classList.add('is-holding'); this.last = performance.now(); Sound.fillStart(); },
+  stop(){ if (!this.holding) return; this.holding = false; this.btn.classList.remove('is-holding'); Sound.fillStop(); },
+  plural(n){ const a = n % 10, b = n % 100; if (a === 1 && b !== 11) return 'баклашка'; if (a >= 2 && a <= 4 && (b < 12 || b > 14)) return 'баклашки'; return 'баклашок'; },
+  update(now){
+    if (!this.holding) return;
+    if (now < this.pause){ this.last = now; return; }
+    const dt = Math.min(0.1, (now - this.last) / 1000); this.last = now;
+    this.L = Math.min(6, this.L + dt * 1.25);
+    Sound.fillLevel(this.L / 6);
+    if (this.L >= 6){
+      this.n++; this.reveal(); this.pause = now + 750;
+      setTimeout(() => { this.L = 0; this.paint(); }, 700);
+    }
+    this.paint();
+  },
+  paint(){
+    const top = 285 - (this.L / 6) * 186, wv = this.holding ? 4 : 1.5;
+    $('#btlFill').setAttribute('d', `M0,${top} Q50,${top - wv} 100,${top} T200,${top} L200,300 L0,300 Z`);
+    const lbl = $('#btlL'); lbl.textContent = this.L.toFixed(1).replace('.', ',') + ' л';
+    lbl.setAttribute('fill', top < 196 ? 'var(--foam)' : 'var(--ink)');
+    $('#qCount').textContent = `${this.n} ${this.plural(this.n)}`;
+    $('#qKg').textContent = `${this.n * 6} кг`;
+  },
+  reveal(){
+    const i = this.n - 1, list = $('#qFacts');
+    let txt = null;
+    if (i < this.facts.length) txt = this.facts[i];
+    else if (i === this.facts.length) txt = `Уже ${this.n * 6} кг води. Так миколаївці носять її щодня з 2022 року.`;
+    if (!txt) return;
+    const li = document.createElement('li'); li.className = 'new'; li.textContent = txt; list.appendChild(li);
+  }
+};
+
+const flood = {
+  cv: $('#floodCanvas'), m: 0, step: 0, houses: [], trees: [], debris: [],
+  scale(w, h){ const portrait = w / h < 0.9; return { portrait, G: portrait ? h * 0.64 : h * 0.84, P: portrait ? h * 0.045 : h * 0.062 }; },
+  layout(w, h){
+    const r = rng(17), { P } = this.scale(w, h); this.houses = []; this.trees = [];
+    let x = -P * 2;
+    while (x < w + P * 2){ const hw = (7 + r() * 2.2) * P; this.houses.push({ x, w: hw, wall: 2.8 + r() * 0.4, ridge: 4.9 + r() * 1.1, roof: r() < 0.55 }); x += hw + (2.5 + r() * 4) * P; }
+    const target = w * (w < 760 ? 0.5 : 0.66);
+    const mid = this.houses.reduce((a, hh) => Math.abs(hh.x + hh.w / 2 - target) < Math.abs(a.x + a.w / 2 - target) ? hh : a, this.houses[0]);
+    mid.ridge = 6.3; mid.dog = true;
+    const nt = Math.max(3, Math.round(w / 220)); for (let i = 0; i < nt; i++) this.trees.push({ x: r() * w, hgt: 7 + r() * 3, rad: 1.6 + r() * 1 });
+    this.debris = Array.from({ length: 16 }, () => ({ x: r(), s: 8 + r() * 18, ph: r() * 6.28, sp: 5 + r() * 12 }));
+    this.w = w;
+  },
+  dog(ctx, x, y, s){
+    ctx.fillStyle = C.ink; ctx.strokeStyle = C.ink;
+    ctx.beginPath(); ctx.ellipse(x, y - 9 * s, 8 * s, 10 * s, -0.2, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x - 6 * s, y - 21 * s, 6 * s, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x - 12 * s, y - 19 * s, 4 * s, 2.6 * s, 0.2, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x - 4 * s, y - 27 * s); ctx.lineTo(x, y - 21 * s); ctx.lineTo(x - 6 * s, y - 20 * s); ctx.fill();
+    ctx.lineWidth = 2.5 * s; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x + 7 * s, y - 4 * s); ctx.quadraticCurveTo(x + 15 * s, y - 8 * s, x + 14 * s, y - 15 * s); ctx.stroke();
+    ctx.fillRect(x - 7 * s, y - 7 * s, 3 * s, 7 * s);
+  },
+  draw(t){
+    const { ctx, w, h } = fit(this.cv);
+    if (!this.houses.length || this.w !== w) this.layout(w, h);
+    const { portrait, G, P } = this.scale(w, h);
+    const dawn = clamp(this.step / 3);
+    const sk = ctx.createLinearGradient(0, 0, 0, G);
+    sk.addColorStop(0, mix(C.sky, C['water-deep'], 0.6 * (1 - dawn) + 0.08)); sk.addColorStop(1, C.sky);
+    ctx.fillStyle = sk; ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = rgba(C.ink, 0.08); ctx.beginPath(); ctx.moveTo(0, G);
+    for (let x = 0; x <= w; x += 12) ctx.lineTo(x, G - 2.4 * P - 14 * fbm(x / w * 5, 3, 8));
+    ctx.lineTo(w, G); ctx.fill();
+    ctx.fillStyle = mix(C.mud, C.ink, 0.25); ctx.fillRect(0, G, w, h - G);
+    for (const tr of this.trees){
+      ctx.fillStyle = rgba(C.ink, 0.3); ctx.fillRect(tr.x - P * 0.12, G - tr.hgt * P * 0.6, P * 0.24, tr.hgt * P * 0.6);
+      ctx.fillStyle = rgba(C.willow, 0.38);
+      ctx.beginPath(); ctx.arc(tr.x, G - tr.hgt * P * 0.7, tr.rad * P, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(tr.x + tr.rad * P * 0.5, G - tr.hgt * P * 0.58, tr.rad * P * 0.75, 0, Math.PI * 2); ctx.fill();
+    }
+    const wallCol = mix(C.bg, C['mud-dry'], 0.35), roofA = mix(C.rust, C.mud, 0.35), roofB = mix(C.muted, C.ink, 0.25);
+    for (const hs of this.houses){
+      const wt = G - hs.wall * P, rt = G - hs.ridge * P;
+      ctx.fillStyle = wallCol; ctx.fillRect(hs.x, wt, hs.w, G - wt);
+      ctx.strokeStyle = rgba(C.ink, 0.25); ctx.lineWidth = 1; ctx.strokeRect(hs.x + 0.5, wt + 0.5, hs.w - 1, G - wt - 1);
+      ctx.fillStyle = rgba(C.ink, 0.55);
+      const ww = P * 1.1, wh = P * 1.2, wy = G - P * 2.3;
+      ctx.fillRect(hs.x + hs.w * 0.16, wy, ww, wh); ctx.fillRect(hs.x + hs.w * 0.84 - ww, wy, ww, wh);
+      ctx.fillStyle = rgba(C.ink, 0.4); ctx.fillRect(hs.x + hs.w * 0.45, G - P * 2.1, P * 0.95, P * 2.1);
+      ctx.fillStyle = hs.roof ? roofA : roofB;
+      ctx.beginPath(); ctx.moveTo(hs.x - P * 0.5, wt); ctx.lineTo(hs.x + hs.w / 2, rt); ctx.lineTo(hs.x + hs.w + P * 0.5, wt); ctx.closePath(); ctx.fill();
+      if (hs.dog) this.dog(ctx, hs.x + hs.w / 2 + 2, rt + 2, Math.max(1, P * 0.032));
+    }
+    const yw = G - this.m * P;
+    if (this.m > 0.02){
+      const murky = mix(C.mud, C.water, 0.5);
+      const wg = ctx.createLinearGradient(0, yw, 0, h); wg.addColorStop(0, rgbaFrom(murky, 0.84)); wg.addColorStop(1, rgbaFrom(mix(C.mud, C.ink, 0.4), 0.96));
+      ctx.fillStyle = wg; ctx.beginPath(); ctx.moveTo(0, h);
+      const surf = x => yw + Math.sin(x * 0.025 + t * 1.3) * 2.2 + Math.sin(x * 0.007 - t * 0.8) * 2.4;
+      for (let x = 0; x <= w + 6; x += 6) ctx.lineTo(x, surf(x));
+      ctx.lineTo(w, h); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = rgba(C.foam, 0.3); ctx.lineWidth = 1.5; ctx.beginPath();
+      for (let x = 0; x <= w + 6; x += 6) x ? ctx.lineTo(x, surf(x)) : ctx.moveTo(0, surf(0));
+      ctx.stroke();
+      if (this.m > 0.8){
+        ctx.fillStyle = rgba(C.ink, 0.6);
+        for (const d of this.debris){
+          const dx = ((d.x * w + t * d.sp) % (w + 60)) - 30, dy = surf(dx) - 1;
+          ctx.save(); ctx.translate(dx, dy); ctx.rotate(Math.sin(t + d.ph) * 0.15); ctx.fillRect(-d.s / 2, -2, d.s, 4); ctx.restore();
+        }
+      }
+      if (this.step >= 2){
+        const L = Math.max(60, P * 3.4), bx = ((t * 24) % (w + L * 2)) - L, by = surf(bx);
+        ctx.fillStyle = mix(C.fresh, C.ink, 0.3);
+        ctx.beginPath(); ctx.moveTo(bx - L / 2, by - 3); ctx.lineTo(bx + L / 2, by - 3); ctx.lineTo(bx + L / 2 - 8, by + 7); ctx.lineTo(bx - L / 2 + 8, by + 7); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = C.ink;
+        [-L / 5, L / 6].forEach(o => { ctx.fillRect(bx + o - P * 0.11, by - 3 - P * 0.62, P * 0.22, P * 0.62); ctx.beginPath(); ctx.arc(bx + o, by - 3 - P * 0.76, P * 0.13, 0, Math.PI * 2); ctx.fill(); });
+        ctx.strokeStyle = C.ink; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(bx + L / 6 + 4, by - P * 0.4); ctx.lineTo(bx + L / 2 + P * 0.4, by + 6); ctx.stroke();
+      }
+    }
+    const rx = portrait ? w * 0.9 : w * 0.94;
+    ctx.strokeStyle = rgba(C.ink, 0.5); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(rx, G); ctx.lineTo(rx, G - 6 * P); ctx.stroke();
+    ctx.fillStyle = C.ink; ctx.font = `500 12px ${getComputedStyle(document.body).fontFamily}`; ctx.textAlign = 'right';
+    for (let k = 1; k <= 6; k++){ const y = G - k * P; ctx.beginPath(); ctx.moveTo(rx - 7, y); ctx.lineTo(rx, y); ctx.stroke(); ctx.fillText(`${k} м`, rx - 10, y + 4); }
+    if (this.m > 0.05){
+      ctx.fillStyle = C.rust; ctx.beginPath(); ctx.moveTo(rx + 2, yw); ctx.lineTo(rx + 12, yw - 6); ctx.lineTo(rx + 12, yw + 6); ctx.closePath(); ctx.fill();
+      ctx.textAlign = 'right'; ctx.font = `600 ${portrait ? 14 : 16}px ${getComputedStyle(document.body).fontFamily}`;
+      ctx.fillText(`+${this.m.toFixed(1).replace('.', ',')} м`, rx - 34, yw - 8);
+    }
+  }
+};
+function rgbaFrom(rgbStr, a){ return rgbStr.replace('rgb(', 'rgba(').replace(')', `,${a})`); }
+
+
+const zoo = {
+  cv: $('#zooCanvas'), cols: 20, rows: 15, A: null, surv: new Set(), resc: [], fl: 0, lift: 0, rs: 0,
+  layout(w, h){
+    const mobile = w < 760;
+    let x0, x1, y0, y1;
+    if (mobile){ x0 = w * 0.06; x1 = w * 0.94; y0 = h * 0.22; y1 = h * 0.58; }
+    else { x0 = Math.max(w * 0.06 + 440, w * 0.42); x1 = w * 0.95; y0 = h * 0.3; y1 = h * 0.88; }
+    const cell = Math.min((x1 - x0) / this.cols, (y1 - y0) / this.rows), gw = cell * this.cols, gh = cell * this.rows;
+    this.A = { x: x0 + (x1 - x0 - gw) / 2, y: y0 + (y1 - y0 - gh) / 2, gw, gh, cell, x0, x1, y0, y1 };
+    const r = rng(99); this.surv = new Set(); while (this.surv.size < 9) this.surv.add(Math.floor(r() * this.cols * this.rows));
+    this.resc = Array.from({ length: 500 }, () => ({ x: x0 + r() * (x1 - x0), y: y0 - (y1 - y0) * 0.1 + r() * (y1 - y0) * 1.1 }));
+  },
+  draw(t){
+    const { ctx, w, h } = fit(this.cv);
+    if (!this.A) this.layout(w, h);
+    ctx.clearRect(0, 0, w, h);
+    const A = this.A, cell = A.cell, rad = cell * 0.3, ga = 1 - 0.7 * this.rs;
+    if (this.fl > 0){
+      const wy = A.y + A.gh * (1 - this.fl) - cell * 0.2;
+      ctx.fillStyle = rgbaFrom(mix(C.mud, C.water, 0.5), 0.3 * ga);
+      ctx.beginPath(); ctx.moveTo(A.x - cell, A.y + A.gh + cell * 0.4);
+      for (let x = A.x - cell; x <= A.x + A.gw + cell; x += 6) ctx.lineTo(x, wy + Math.sin(x * 0.04 + t * 1.4) * 2.5);
+      ctx.lineTo(A.x + A.gw + cell, A.y + A.gh + cell * 0.4); ctx.closePath(); ctx.fill();
+    }
+    for (let i = 0; i < this.cols * this.rows; i++){
+      const r = Math.floor(i / this.cols), c = i % this.cols;
+      let cx = A.x + (c + 0.5) * cell, cy = A.y + (r + 0.5) * cell;
+      const under = (this.rows - r - 0.5) / this.rows < this.fl;
+      if (this.surv.has(i)){
+        if (this.lift > 0){ cy = lerp(cy, A.y - cell * (1.2 + (i % 3) * 0.6), this.lift) + Math.sin(t * 1.3 + i) * 2 * this.lift; }
+        ctx.globalAlpha = 1; ctx.fillStyle = C.foam; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      } else if (under){
+        ctx.globalAlpha = ga; ctx.strokeStyle = rgba(C.muted, 0.55); ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.arc(cx, cy, rad * 0.85, 0, Math.PI * 2); ctx.stroke();
+      } else {
+        ctx.globalAlpha = ga; ctx.fillStyle = C.ink;
+        ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+    if (this.rs > 0){
+      const k = Math.floor(500 * this.rs); ctx.fillStyle = C.fresh;
+      for (let j = 0; j < k; j++){ const p = this.resc[j]; ctx.beginPath(); ctx.arc(p.x, p.y, Math.max(2, cell * 0.14), 0, Math.PI * 2); ctx.fill(); }
+    }
+  }
+};
+
+
+const scrollies = $$('.scrolly').map(el => ({ el, id: el.id, steps: $$('.step', el), step: -1, top: [], visible: false, local(k){ const t = this.top[k]; return t === undefined ? 0 : clamp((innerHeight * TH - t) / innerHeight); } }));
+const S = Object.fromEntries(scrollies.map(s => [s.id, s]));
+const forestState = { T: -1, lastT: -2, t: 0 };
+
+const handlers = {
+  salt(s){ bursts.step = s.step; },
+  pipe(s){ pipe.update(s); },
+  drain(s){
+    if (s.step >= 1 && !drain.boomed){ drain.boomed = true; Sound.boom(); }
+    if (s.step === 0) drain.boomed = false;
+    const T = s.local(1) + s.local(2) + s.local(3);
+    drain.drop = reduced ? clamp(s.step / 2) : smooth(0.1, 1.85, T);
+    drain.dry = reduced ? (s.step >= 3 ? 1 : 0) : smooth(1.45, 2.35, T);
+    drain.level = lerp(0.58, 0.112, drain.drop);
+    drain.dirty = true;
+    const lbl = s.steps[Math.max(0, s.step)].querySelector('.when').textContent;
+    const el = $('#drainDate'); if (el.textContent !== lbl) el.textContent = lbl;
+  },
+  flood(s){
+    const T = Math.max(0, s.local(0) - TH) + s.local(1);
+    flood.m = reduced ? (s.step >= 1 ? 5.61 : 1.5) : 5.61 * smooth(0, 1.15, T);
+    flood.step = s.step;
+    const lbl = s.steps[Math.max(0, s.step)].querySelector('.when').textContent;
+    const el = $('#floodDate'); if (el.textContent !== lbl) el.textContent = lbl;
+  },
+  zoo(s){
+    zoo.fl = reduced ? (s.step >= 1 ? 1 : 0) : smooth(0, 0.85, s.local(1));
+    zoo.lift = reduced ? (s.step >= 2 ? 1 : 0) : smooth(0.05, 0.8, s.local(2));
+    zoo.rs = reduced ? (s.step >= 4 ? 1 : 0) : smooth(0.05, 0.85, s.local(4));
+    const n = $('#zooNum');
+    const [big, small] = s.step >= 4 ? ['500+', 'тварин урятували волонтери'] : s.step >= 1 ? ['300', 'майже всі загинули'] : ['300', 'тварин жили в зоопарку'];
+    if (n.firstChild.textContent !== big) n.firstChild.textContent = big;
+    if (n.lastChild.textContent !== small) n.lastChild.textContent = small;
+  },
+  forest(s){
+    let T = Math.max(0, s.local(0) - TH); for (let k = 1; k < s.steps.length; k++) T += s.local(k);
+    if (reduced) T = [0.3, 1.8, 3.4, 4, 4.5, 5][Math.max(0, s.step)];
+    forestState.T = T;
+  }
+};
+
+const heroEl = $('#hero'), soundSecs = $$('[data-sound]');
+let heroVisible = true;
+function onScroll(){
+  const vh = innerHeight;
+  for (const s of scrollies){
+    const r = s.el.getBoundingClientRect();
+    s.visible = r.top < vh && r.bottom > 0;
+    if (!s.visible && s.step !== -1 && (r.bottom < -vh || r.top > 2 * vh)) continue;
+    let idx = 0;
+    s.top = s.steps.map((st, i) => { const t = st.getBoundingClientRect().top; if (t < vh * TH) idx = i; return t; });
+    if (idx !== s.step){ s.steps.forEach((st, i) => st.classList.toggle('is-active', i === idx)); s.step = idx; }
+    handlers[s.id] && handlers[s.id](s);
+  }
+  const hr = heroEl.getBoundingClientRect(); heroVisible = hr.bottom > 0;
+  const max = document.documentElement.scrollHeight - vh;
+  $('#progress').style.transform = `scaleX(${max > 0 ? clamp(scrollY / max) : 0})`;
+  updateMix();
+}
+let ticking = false;
+addEventListener('scroll', () => { if (!ticking){ ticking = true; requestAnimationFrame(() => { ticking = false; onScroll(); }); } }, { passive: true });
+
+
+function renderForest(force){
+  const T = forestState.T;
+  if (!force && Math.abs(T - forestState.lastT) < 0.004) return;
+  forestState.lastT = T;
+  const t = clamp(T / 3.2); forestState.t = t;
+  const label = ndvi.renderTo($('#ndviCanvas'), t, 'ndvi', true);
+  const el = $('#ndviDate'); if (el.textContent !== label) el.textContent = label;
+  trees.draw(T);
+  const k = reduced ? 0.6 : smooth(0.4, 4.6, T);
+  $('#tilt').style.transform = `rotateX(${k * 44}deg) scale(${1 + k * 0.28}) translate(${-k * 5}%, ${k * 4}%)`;
+  document.querySelector('.tilt-wrap').style.setProperty('--fog', k.toFixed(3));
+}
+
+const compare = {
+  wrap: $('#compare'), range: $('#cmpRange'), real: false,
+  init(){
+    const set = () => this.wrap.style.setProperty('--pos', this.range.value + '%');
+    this.range.addEventListener('input', set); set();
+  },
+  render(){
+    if (this.real) return;
+    ndvi.renderTo($('#cmpBefore'), 0, 'true', false);
+    ndvi.renderTo($('#cmpAfter'), 1, 'true', false);
+  }
+};
+
+const RATE = 51.9e9 / (7 * 24 * 3600);
+const counter = {
+  el: $('#counter'), time: $('#counterTime'), start: performance.now(), sec: $('.cost'), last: 0,
+  update(now){
+    if (now - this.last < 70) return; this.last = now;
+    const r = this.sec.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
+    const s = (now - this.start) / 1000;
+    this.el.textContent = Math.floor(s * RATE).toLocaleString('uk-UA') + ' грн';
+    const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+    this.time.textContent = 'за ' + (m ? `${m} хв ${String(sec).padStart(2, '0')} с` : `${sec} с`) + ' на цій сторінці';
+  }
+};
+
+const sim = {
+  total: 8, cats: [['drink', 'Пиття'], ['cook', 'Готування їжі'], ['hyg', 'Гігієна'], ['clean', 'Посуд і прибирання']], vals: {},
+  init(){
+    const box = $('#sliders');
+    box.innerHTML = this.cats.map(([id, name]) => `<div class="slider-row"><label for="s_${id}"><span>${name}</span><output id="o_${id}">0 л</output></label><input type="range" id="s_${id}" min="0" max="${this.total}" step="0.5" value="0"></div>`).join('');
+    this.cats.forEach(([id]) => { this.vals[id] = 0; $('#s_' + id).addEventListener('input', e => this.change(id, +e.target.value)); });
+    $('#simCheck').addEventListener('click', () => this.check());
+    $('#simReset').addEventListener('click', () => { this.cats.forEach(([id]) => { this.vals[id] = 0; $('#s_' + id).value = 0; }); $('#simFeedback').innerHTML = ''; this.paint(); });
+    this.paint();
+  },
+  used(except){ return this.cats.reduce((a, [id]) => a + (id === except ? 0 : this.vals[id]), 0); },
+  change(id, v){
+    const maxv = this.total - this.used(id);
+    if (v > maxv){ v = maxv; $('#s_' + id).value = v; }
+    this.vals[id] = v; this.paint();
+  },
+  fmt(v){ return String(v).replace('.', ',') + ' л'; },
+  paint(){
+    this.cats.forEach(([id]) => { $('#o_' + id).textContent = this.fmt(this.vals[id]); });
+    const left = this.total - this.used();
+    $('#canLeft').textContent = 'лишилось ' + this.fmt(left);
+    const H = 172, f = left / this.total;
+    const r = $('#canFill'); r.setAttribute('y', 40 + H * (1 - f)); r.setAttribute('height', H * f + 2);
+  },
+  check(){
+    const v = this.vals, left = this.total - this.used(), home = v.cook + v.hyg + v.clean;
+    const out = [];
+    out.push(v.drink < 3
+      ? `<p class="bad">На пиття ${this.fmt(v.drink)}. Це менше за рекомендований мінімум: 3 л питної води на людину щодня.</p>`
+      : `<p>На пиття ${this.fmt(v.drink)}. Мінімум у 3 л виконано.</p>`);
+    out.push(`<p>На побут пішло ${this.fmt(home)}. Для гігієни й готування радять від 10 до 12 л технічної води на людину на добу.</p>`);
+    if (left > 0) out.push(`<p>У запасі лишилось ${this.fmt(left)}. Це розумно, коли невідомо, коли привезуть воду.</p>`);
+    out.push(`<p>Разом рекомендують від 13 до 15 л на людину на добу, а тут було лише 8. Миколаївці роками рахують кожен літр, тому запас води варто мати заздалегідь.</p>`);
+    $('#simFeedback').innerHTML = out.join('');
+  }
+};
+
+const calc = {
+  n: 3,
+  init(){
+    $('#ppMinus').addEventListener('click', () => this.set(this.n - 1));
+    $('#ppPlus').addEventListener('click', () => this.set(this.n + 1));
+    this.set(3);
+  },
+  word(n){ const a = n % 10, b = n % 100; if (a === 1 && b !== 11) return 'людина'; if (a >= 2 && a <= 4 && (b < 12 || b > 14)) return 'людини'; return 'людей'; },
+  set(n){
+    this.n = clamp(n, 1, 12);
+    $('#ppOut').textContent = this.n; $('#ppWord').textContent = this.word(this.n);
+    $('#drinkOut').textContent = (9 * this.n) + ' л';
+    $('#techOut').textContent = `від ${30 * this.n} до ${36 * this.n} л`;
+  }
+};
+
+const Sound = {
+  ctx: null, on: false, mix: { water: 0.4, wind: 0, forest: 0, crick: 0 }, timer: null, g: {}, fill: null,
+  init(){
+    const AC = window.AudioContext || window.webkitAudioContext; const c = new AC(); this.ctx = c;
+    const master = c.createGain(); master.gain.value = 0; const comp = c.createDynamicsCompressor();
+    master.connect(comp); comp.connect(c.destination); this.master = master;
+    this.noise = brown => { const len = c.sampleRate * 4, b = c.createBuffer(1, len, c.sampleRate), d = b.getChannelData(0); let last = 0; for (let i = 0; i < len; i++){ const w = Math.random() * 2 - 1; if (brown){ last = (last + 0.02 * w) / 1.02; d[i] = last * 3.5; } else d[i] = w; } const s = c.createBufferSource(); s.buffer = b; s.loop = true; s.start(); return s; };
+    const bus = () => { const g = c.createGain(); g.gain.value = 0; g.connect(master); return g; };
+    this.g = { water: bus(), wind: bus(), forest: bus(), crick: bus() };
+
+    const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 500; lp.Q.value = 0.3;
+    const am = c.createGain(); am.gain.value = 0.55;
+    const lfo = c.createOscillator(); lfo.frequency.value = 0.11; const ld = c.createGain(); ld.gain.value = 0.35; lfo.connect(ld); ld.connect(am.gain); lfo.start();
+    this.noise(true).connect(lp); lp.connect(am); am.connect(this.g.water); this.wlp = lp;
+
+    const nbp = c.createBiquadFilter(); nbp.type = 'bandpass'; nbp.frequency.value = 350; nbp.Q.value = 1.2; const sw = c.createGain(); sw.gain.value = 0.5;
+    this.noise(false).connect(nbp); nbp.connect(sw); sw.connect(this.g.wind); this.nbp = nbp; this.sw = sw;
+  },
+  out(bus){ const c = this.ctx; if (c.createStereoPanner){ const p = c.createStereoPanner(); p.pan.value = Math.random() * 1.6 - 0.8; p.connect(bus); return p; } return bus; },
+  tick(){
+    const c = this.ctx, now = c.currentTime, m = this.mix;
+    if (Math.random() < 0.2) this.wlp.frequency.setTargetAtTime(380 + Math.random() * 260, now, 1.5);
+    if (Math.random() < 0.2){ this.nbp.frequency.setTargetAtTime(240 + Math.random() * 380, now, 1.2); this.sw.gain.setTargetAtTime(0.3 + Math.random() * 0.6, now, 1.5); }
+    if (m.water > 0.2 && Math.random() < 0.035 * m.water) this.drip();
+    if (m.forest > 0.05 && Math.random() < 0.15 * m.forest) this.chirp();
+    if (m.forest > 0.1 && Math.random() < 0.06 * m.forest) this.croak();
+    if (m.crick > 0.05 && Math.random() < 0.35 * m.crick) this.cricket();
+  },
+  env(g, t, peak, a, d){ g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + a + d); },
+  drip(){
+    const c = this.ctx, t = c.currentTime, o = c.createOscillator(), g = c.createGain(), f = 700 + Math.random() * 500;
+    o.type = 'sine'; o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * 2.2, t + 0.04);
+    this.env(g, t, 0.05, 0.005, 0.07);
+    o.connect(g); g.connect(this.out(this.g.water)); o.start(t); o.stop(t + 0.1); o.onended = () => g.disconnect();
+  },
+  chirp(){
+    const c = this.ctx, t = c.currentTime, o = c.createOscillator(), g = c.createGain();
+    const base = 2400 + Math.random() * 2200, n = 2 + Math.floor(Math.random() * 4), st = 0.09 + Math.random() * 0.05;
+    o.type = 'sine'; g.gain.setValueAtTime(0.0001, t);
+    for (let k = 0; k < n; k++){
+      const s = t + k * st, f0 = base * (0.9 + Math.random() * 0.2);
+      o.frequency.setValueAtTime(f0, s); o.frequency.exponentialRampToValueAtTime(f0 * (Math.random() < 0.5 ? 1.35 : 0.75), s + st * 0.7);
+      g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(0.06, s + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, s + st * 0.8);
+    }
+    o.connect(g); g.connect(this.out(this.g.forest)); o.start(t); o.stop(t + n * st + 0.05); o.onended = () => g.disconnect();
+  },
+  croak(){
+    const c = this.ctx, t = c.currentTime, o = c.createOscillator(), lp = c.createBiquadFilter(), g = c.createGain();
+    o.type = 'sawtooth'; o.frequency.value = 90 + Math.random() * 50; lp.type = 'lowpass'; lp.frequency.value = 520; g.gain.value = 0.0001;
+    const n = 4 + Math.floor(Math.random() * 4);
+    for (let k = 0; k < n; k++){ const s = t + k * 0.065; g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(0.2, s + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, s + 0.045); }
+    o.connect(lp); lp.connect(g); g.connect(this.out(this.g.forest)); o.start(t); o.stop(t + n * 0.065 + 0.1); o.onended = () => g.disconnect();
+  },
+  cricket(){
+    const c = this.ctx, t = c.currentTime, o = c.createOscillator(), g = c.createGain();
+    o.type = 'sine'; o.frequency.value = 4200 + Math.random() * 600; g.gain.value = 0.0001;
+    for (let k = 0; k < 3; k++){ const s = t + k * 0.04; g.gain.setValueAtTime(0.0001, s); g.gain.exponentialRampToValueAtTime(0.025, s + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, s + 0.022); }
+    o.connect(g); g.connect(this.out(this.g.crick)); o.start(t); o.stop(t + 0.16); o.onended = () => g.disconnect();
+  },
+  boom(){
+    if (!this.on) return;
+    const c = this.ctx, t = c.currentTime;
+    const o = c.createOscillator(), g = c.createGain(); o.type = 'sine';
+    o.frequency.setValueAtTime(62, t); o.frequency.exponentialRampToValueAtTime(28, t + 1.8);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.55, t + 0.04); g.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
+    o.connect(g); g.connect(this.master); o.start(t); o.stop(t + 2.3);
+    const n = this.noise(true), lp = c.createBiquadFilter(), ng = c.createGain(); lp.type = 'lowpass'; lp.frequency.value = 260;
+    ng.gain.setValueAtTime(0.0001, t); ng.gain.exponentialRampToValueAtTime(0.5, t + 0.05); ng.gain.exponentialRampToValueAtTime(0.0001, t + 2.6);
+    n.connect(lp); lp.connect(ng); ng.connect(this.master); setTimeout(() => { try { n.stop(); } catch (e) {} }, 2800);
+  },
+  fillStart(){
+    if (!this.on || this.fill) return;
+    const c = this.ctx, n = this.noise(false), bp = c.createBiquadFilter(), g = c.createGain();
+    bp.type = 'bandpass'; bp.Q.value = 7; bp.frequency.value = 320; g.gain.value = 0.0001; g.gain.exponentialRampToValueAtTime(0.35, c.currentTime + 0.15);
+    n.connect(bp); bp.connect(g); g.connect(this.master); this.fill = { n, bp, g };
+  },
+  fillLevel(f){ if (this.fill) this.fill.bp.frequency.setTargetAtTime(320 + f * 1400, this.ctx.currentTime, 0.08); },
+  fillStop(){
+    if (!this.fill) return; const { n, g } = this.fill, c = this.ctx; this.fill = null;
+    g.gain.setTargetAtTime(0.0001, c.currentTime, 0.06); setTimeout(() => { try { n.stop(); } catch (e) {} g.disconnect(); }, 400);
+  },
+  setMix(m){
+    this.mix = m; if (!this.ctx || !this.on) return;
+    const now = this.ctx.currentTime;
+    this.g.water.gain.setTargetAtTime(m.water * 0.45, now, 0.8);
+    this.g.wind.gain.setTargetAtTime(m.wind * 0.32, now, 0.9);
+    this.g.forest.gain.setTargetAtTime(m.forest * 0.75, now, 0.9);
+    this.g.crick.gain.setTargetAtTime((m.crick || 0) * 0.7, now, 0.9);
+  },
+  async toggle(){
+    if (!this.ctx) this.init();
+    const c = this.ctx;
+    if (!this.on){
+      await c.resume(); this.on = true; this.master.gain.setTargetAtTime(0.8, c.currentTime, 0.4); this.setMix(this.mix);
+      this.timer = setInterval(() => this.tick(), 110);
+    } else {
+      this.on = false; this.fillStop(); this.master.gain.setTargetAtTime(0, c.currentTime, 0.2); clearInterval(this.timer);
+      setTimeout(() => { if (!this.on) c.suspend(); }, 700);
+    }
+  }
+};
+function updateMix(){
+  const mid = innerHeight / 2; let el = null;
+  for (const s of soundSecs){ const r = s.getBoundingClientRect(); if (r.top <= mid && r.bottom >= mid){ el = s; break; } }
+  const kind = el ? el.dataset.sound : 'water';
+  const M = {
+    water: () => ({ water: 0.5, wind: 0.04, forest: 0, crick: 0 }),
+    queue: () => ({ water: 0.1, wind: 0.08, forest: 0, crick: 0 }),
+    drain: () => ({ water: 0.55 * (1 - drain.drop) + 0.08, wind: 0.06 + 0.5 * drain.drop, forest: 0, crick: 0 }),
+    flood: () => ({ water: 0.75, wind: 0.12, forest: 0, crick: 0.6 * (1 - clamp(flood.step / 3)) }),
+    zoo: () => ({ water: 0.3 * zoo.fl, wind: 0.08, forest: 0, crick: 0 }),
+    wind: () => ({ water: 0.05, wind: 0.55, forest: 0, crick: 0 }),
+    forest: () => { const f = el.classList.contains('scrolly') ? clamp(0.2 + forestState.t * 0.8) : 0.85; return { water: 0.12, wind: 0.45 * (1 - f) + 0.08, forest: f, crick: 0 }; },
+    quiet: () => ({ water: 0, wind: 0.12, forest: 0.08, crick: 0 })
+  };
+  Sound.setMix((M[kind] || M.quiet)());
+}
+const sBtn = $('#soundBtn');
+if (!(window.AudioContext || window.webkitAudioContext)) sBtn.hidden = true;
+sBtn.addEventListener('click', async () => {
+  await Sound.toggle();
+  sBtn.setAttribute('aria-pressed', String(Sound.on));
+  sBtn.querySelector('span').textContent = Sound.on ? 'Вимкнути звук' : 'Увімкнути звук';
+});
+
+
+async function probeReal(){
+  const months = Array.from({ length: 42 }, (_, i) => { const tot = 4 + i, y = 2023 + Math.floor(tot / 12), mo = tot % 12; return { file: `images/ndvi/${y}-${String(mo + 1).padStart(2, '0')}.jpg`, label: `${MONTHS[mo]} ${y}` }; });
+  const first = await loadImg(months[0].file);
+  const imgs = first ? await Promise.all(months.map(m => loadImg(m.file))) : [];
+  const frames = months.map((m, i) => ({ ...m, img: imgs[i] })).filter(f => f.img);
+  if (frames.length >= 2){ ndvi.real = frames; $('#ndviNote').textContent = 'Знімки Sentinel-2 (Copernicus), шар NDVI.'; renderForest(true); }
+  const photos = [
+    ['#cmpPhotoBefore', 'https://uanimals.org/wp-content/uploads/2026/06/2020-rik-photo_5258372565968218674_w.webp'],
+    ['#cmpPhotoAfter', 'https://uanimals.org/wp-content/uploads/2026/06/2024-rik-photo_5258372565968218673_w.webp']
+  ];
+  const loaded = await Promise.all(photos.map(async ([selector, url]) => {
+    const image = await loadImg(url);
+    if (!image) return false;
+    const target = $(selector);
+    target.src = image.src;
+    target.classList.add('is-loaded');
+    return true;
+  }));
+  compare.real = loaded.every(Boolean);
+}
+
+async function loadGallery(){
+  const first = await loadImg('images/foto-1.jpg'); if (!first) return;
+  const rest = await Promise.all(Array.from({ length: 7 }, (_, i) => loadImg(`images/foto-${i + 2}.jpg`)));
+  const g = $('#gal');
+  [first, ...rest].filter(Boolean).forEach(im => { im.alt = 'Фото авторки, Миколаїв'; im.loading = 'lazy'; g.appendChild(im); });
+  $('#gallery').hidden = false; layoutAll();
+}
+
+
+function layoutAll(){
+  readColors();
+  const w = innerWidth, h = innerHeight;
+  bursts.layout(w, h); pipe.layout(w, h); zoo.layout(w, h); flood.houses = [];
+  drain.g = []; drain.dirty = true; hero.dirty = true;
+  trees.list = [];
+  onScroll(); renderForest(true); compare.render();
+  if (reduced){ hero.draw(0); drain.draw(0); }
+}
+let rT;
+addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(layoutAll, 150); });
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', layoutAll);
+
+function frame(now){
+  const t = now / 1000;
+  if (heroVisible && (!reduced || hero.dirty)){ hero.draw(reduced ? 0 : t); hero.dirty = false; }
+  if (S.drain && S.drain.visible && (!reduced || drain.dirty)){ drain.draw(reduced ? 0 : t); drain.dirty = false; }
+  if (S.salt && S.salt.visible) bursts.draw(now);
+  if (S.flood && S.flood.visible) flood.draw(reduced ? 0 : t);
+  if (S.zoo && S.zoo.visible) zoo.draw(reduced ? 0 : t);
+  queue.update(now);
+  if (S.forest && S.forest.visible) renderForest(false);
+  counter.update(now);
+  requestAnimationFrame(frame);
+}
+
+readColors();
+ndvi.build(); bursts.init(); pipe.init(); compare.init(); sim.init(); calc.init(); queue.init();
+layoutAll();
+requestAnimationFrame(frame);
+probeReal();
+loadGallery();
+})();
+</script>
+</body>
+</html>
